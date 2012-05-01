@@ -1,0 +1,25 @@
+#!/bin/env python
+# -*- coding: utf-8 -*-
+
+# Format time in seconds
+# caofx: 2009-06-03 16:09:08
+
+import sys, time
+
+def str2float(str, default = -1):
+    '''Convert a string to float, return default when conversion faild'''
+    try:
+        v = float(str)
+    except ValueError:
+        v = default
+    return v
+
+t = -1
+if len(sys.argv) > 1:
+    t = str2float(sys.argv[1])/1000
+
+if t >= 0:
+    print time.strftime('%Y%m%d-%H%M%S', time.localtime(t))
+else:
+    print "Usage: \n\t%s seconds" % sys.argv[0]
+

@@ -1,0 +1,37 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Custom grep tool
+# caofx@youdao: 2009-06-13 22:22:14
+
+import sys, re
+from optparse import OptionParser
+
+parser = OptionParser(usage="%prog [options] <in-pattern> [out-pattern]")
+parser.add_option("-r", "--replace", dest="replace", action="store_true", default=False)
+parser.add_option("-v", "--inverse", dest="inverse", action="store_true", default=False)
+(options, args) = parser.parse_args()
+replace = options.replace
+inverse = options.inverse
+
+if len(args) < 1 or len(args) > 2:
+    parser.error("incorrect argument numbers, refer to help information by \"-h\" option")
+
+ipattern = args[0]
+if(len(args) == 1):
+    opattern = r"\g<0>"
+else:
+    opattern = args[1]
+
+reobj = re.compile(ipattern)
+for line in sys.stdin:
+    line = line[0:-1]
+    if replace:
+        print re.sub(reobj, opattern, line)
+    else:
+        m = reobj.search(line)
+        if inverse:
+            if m == None: print line
+        else:
+            if m != None: print m.expand(opattern)
+    

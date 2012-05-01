@@ -1,0 +1,240 @@
+#!/bin/env python
+# -*- coding: utf-8 -*-
+
+# Cluster tool based on ssh
+# Security is ensured by ssh, so ssh-agent may be needed
+# caofx@yodao: 2008-08-23 17:06:26
+
+import sys, os, threading, time, re
+
+def print_help():
+    print "Cluster tool based on ssh"
+    print "   Security is ensured by ssh, so ssh-agent may be needed\n"
+    print "Usage: "
+    print "   gssh [-h] -- print help"
+    print "   gssh [-d] [-t second] [-u user] <-f host-list-file | -g host1[,host2,...]> command"
+    print "   gssh [-d] [-t second] [-u user] <-f host-list-file | -g host1[,host2,...]> -c [[other@]host:]src-path dest-path\n"
+    print "   -d\n      dry run"
+    print "   -t second\n      checking interval, default 5"
+    print "   -u user\n      ssh as <user>"
+    print "   -c [[other@]host:]src-path dest-path\n      copy files"
+    print "\nNote: "
+    print "   host-list-file: text file containing comma-separated hostname-list"
+    print "          example: 'ex003-005,nb002' == 'ex003,ex004,ex005,nb002'"
+    print "   -g will override -f option"
+    print "   if some arguments may cause ambiguity, consider using \"'\" to surround them"
+
+CHECK_INTERVAL = 5
+VAR_BOOL = 0
+VAR_STR = 1
+param_default = (False, "")
+
+def argv_parser(cmd_line, param_template):
+    # init
+    params = {};
+    for temp_var in param_template:
+        params[temp_var[0]] = param_default[temp_var[1]]
+    params[""] = param_default[VAR_STR]
+
+    # parse
+    current_param = None
+    last_blank = False
+    for cmd_var in cmd_line:
+        processed = False
+        for temp_var in param_template:
+            if cmd_var == temp_var[0]:
+                if temp_var[1] == VAR_STR:
+                    current_param = temp_var[0]
+                elif temp_var[1] == VAR_BOOL:
+                    params[temp_var[0]] = True
+                    current_param = None
+                processed = True
+                break
+            
+        if not processed:
+            if current_param != None:
+                params[current_param] = cmd_var
+                current_param = None
+                last_blank = False
+            else:
+                if not last_blank:
+                    params[""] = [cmd_var]
+                else:
+                    params[""].append(cmd_var)
+                last_blank = True
+        else:
+            last_blank = False
+    
+    return params
+
+def host_range(prefix, start, stop, post_len):
+    if not (start >= 0 and start < stop and post_len >= 1):
+        return None
+    format = prefix + "%%0%dd" % post_len
+    hosts = []
+    i = start
+    while i <= stop:
+        hosts.append(format % i)
+        i += 1
+    return hosts
+
+def hostlist_parser(hostlist):
+    hosts = hostlist.split(',')
+    reobj = re.compile(r"(\w*?)(\d+)-(\d+)");
+    hosts_parsed = []
+    for host in hosts:
+        q = reobj.match(host)
+        if q:
+            prefix = q.group(1)
+            length = len(q.group(2))
+            if length == len(q.group(3)):
+                start = int(q.group(2))
+                stop = int(q.group(3))
+                tmp = host_range(prefix, start, stop, length)
+                if not tmp:
+                    return None
+                hosts_parsed += tmp
+        else:
+            hosts_parsed.append(host)
+
+    return hosts_parsed
+
+def str2int(str, base, default = 0):
+    '''Convert a string to int, return default when conversion faild'''
+    try:
+        v = int(str, base)
+    except ValueError:
+        v = default
+    return v
+
+def run_cmd(cmd, dry = False):
+    if dry:
+        return (0, cmd)
+    cmd_pipe = os.popen(cmd + " 2>&1")
+    out = cmd_pipe.read()
+    status = cmd_pipe.close()
+    return (status, out)
+
+def ssh_run(host, cmd, dry = False, user = None):
+    if user == None or user == "":
+        cmdline = "ssh -n %s '%s'" % (host, cmd)
+    else:
+        cmdline = "ssh -n %s@%s '%s'" % (user, host, cmd)
+    return run_cmd(cmdline, dry)
+
+def ssh_copy(host, src, dest, dry = False, user = None):
+    if user == None or user == "":
+        cmdline = "scp -r %s %s:%s" % (src, host, dest)
+    else:
+        cmdline = "scp -r %s %s@%s:%s" % (src, user, host, dest)
+    return run_cmd(cmdline, dry)
+
+class worker(threading.Thread):
+    def __init__(self, host, user, cmd, src, dest, status, dry):
+        threading.Thread.__init__(self)
+        self.host = host
+        self.user = user
+        self.cmd = cmd
+        self.src = src
+        self.dest = dest
+        self.status = status
+        self.dry = dry
+
+    def run(self):
+        if self.cmd:
+            result = ssh_run(self.host, self.cmd, self.dry, self.user)
+            print "[%s] run: %s\n%s" % (self.host, self.cmd, result[1])
+        else:
+            result = ssh_copy(self.host, self.src, self.dest, self.dry, self.user)
+            print "[%s] copy: %s to %s:%s\n%s" % (self.host, self.src, self.host, self.dest, result[1])
+
+        self.status.update(self.host)
+
+class hosts_status:
+    def __init__(self, hosts, interval):
+        self.status = dict.fromkeys(hosts, False)
+        self.interval = interval
+        self.mutex = threading.Lock()
+        self.condition = threading.Condition(self.mutex)
+
+    def update(self, host):
+        self.mutex.acquire()
+        del self.status[host]
+        if len(self.status) == 0:
+            self.condition.notify()
+        self.mutex.release()
+
+    def wait_warn(self):
+        self.mutex.acquire()
+        ret = (len(self.status) == 0)
+        if ret:
+            self.mutex.release()
+            return ret
+
+        self.condition.wait(self.interval)
+        ret = (len(self.status) == 0)
+        if not ret:
+            print "Total %d hosts not returned:" % len(self.status), ", ".join(self.status.keys())
+        self.mutex.release()
+        return ret
+
+def timer_proc(status_obj):
+    while True:
+        if status_obj.wait_warn():
+            break
+
+if __name__ == "__main__":
+    param_template = (("-h", VAR_BOOL), ("-d", VAR_BOOL), ("-u", VAR_STR), ("-f", VAR_STR), ("-g", VAR_STR), ("-c", VAR_BOOL), ("-t", VAR_STR))
+    params = argv_parser(sys.argv[1:], param_template)
+    if params["-h"] == True or (params["-f"] == "" and params["-g"] == "") or len(params[""]) < 1:
+        print_help()
+        sys.exit(0)
+
+    if params["-t"] != "":
+        interval = str2int(params["-t"], 10, CHECK_INTERVAL)
+    else:
+        interval = CHECK_INTERVAL
+
+    if params["-u"] != "":
+        user = params["-u"]
+    else:
+        user = None
+
+    if params["-g"] != "":
+        hosts = hostlist_parser(params["-g"])
+    else:
+        hosts = hostlist_parser(open(params["-f"]).read())
+
+    if not hosts:
+        print "Error parsing host-list"
+        print_help()
+        sys.exit(0)
+
+    if params["-c"]:
+        if len(params[""]) != 2:
+            print_help()
+            sys.exit(0)
+        src = params[""][0]
+        dest = params[""][1]
+        cmd = None
+    else:
+        cmd = " ".join(params[""])
+        src = None
+        dest = None
+
+    status_obj = hosts_status(hosts, interval)
+    threads = []
+    for host in hosts:
+        w = worker(host, user, cmd, src, dest, status_obj, params["-d"])
+        threads.append(w)
+        w.start()
+
+    if not params["-d"]:
+        timer = threading.Thread(target = timer_proc, args = (status_obj,))
+        timer.start()
+        timer.join()
+
+    for w in threads:
+        w.join()
+
+    print "All %u hosts returned" % len(hosts)

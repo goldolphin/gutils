@@ -1,0 +1,23 @@
+#!/bin/env python
+# -*- coding: utf-8 -*-
+
+# sample tool
+# caofx@youdao: 2010-10-29 17:32:42
+
+import sys, random
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("-p", "--prob", dest="prob", type="float")
+parser.add_option("-c", "--count", dest="count", type="int", default=sys.maxint)
+(options, args) = parser.parse_args()
+prob = options.prob
+count = options.count
+
+for line in sys.stdin:
+    line = line[0:-1]
+    if count <= 0: break
+    if random.random() < prob:
+       print line
+       count -= 1
+    
