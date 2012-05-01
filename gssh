@@ -3,7 +3,7 @@
 
 # Cluster tool based on ssh
 # Security is ensured by ssh, so ssh-agent may be needed
-# caofx@yodao: 2008-08-23 17:06:26
+# goldolphin: 2012-05-01 13:42:55
 
 import sys, os, threading, time, re
 

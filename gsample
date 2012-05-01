@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # sample tool
-# caofx@youdao: 2010-10-29 17:32:42
+# goldolphin: 2012-05-01 13:42:26
 
 import sys, random
 from optparse import OptionParser

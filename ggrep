@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Custom grep tool
-# caofx@youdao: 2009-06-13 22:22:14
+# goldolphin: 2012-05-01 13:41:39
 
 import sys, re
 from optparse import OptionParser

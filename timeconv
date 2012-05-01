@@ -1,8 +1,8 @@
-#!/bin/env python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # Format time in seconds
-# caofx: 2009-06-03 16:09:08
+# goldolphin: 2012-05-01 13:43:41
 
 import sys, time
 
