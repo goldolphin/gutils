@@ -1,0 +1,10 @@
+vbell off
+defscrollback 600000
+screen -t edit 0
+screen -t bin 1
+screen -t test 2
+select 0
+
+hardstatus alwayslastline
+hardstatus string '%{= Bw}%-Lw%{= ck}%50>%n%f* %t%{= Bw}%+Lw%<'
+
