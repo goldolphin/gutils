@@ -10,9 +10,13 @@ from optparse import OptionParser
 parser = OptionParser(usage="%prog [options] <in-pattern> [out-pattern]")
 parser.add_option("-r", "--replace", dest="replace", action="store_true", default=False)
 parser.add_option("-v", "--inverse", dest="inverse", action="store_true", default=False)
+parser.add_option("-f", "--fulltext", dest="fulltext", action="store_true", default=False)
+parser.add_option("-i", "--inputfile", dest="inputfile", action="store", type ="string", help="read from stdin by default")
 (options, args) = parser.parse_args()
 replace = options.replace
 inverse = options.inverse
+fulltext = options.fulltext
+inputfile = options.inputfile
 
 if len(args) < 1 or len(args) > 2:
     parser.error("incorrect argument numbers, refer to help information by \"-h\" option")
@@ -23,9 +27,7 @@ if(len(args) == 1):
 else:
     opattern = args[1]
 
-reobj = re.compile(ipattern)
-for line in sys.stdin:
-    line = line[0:-1]
+def process(reobj, line):
     if replace:
         print re.sub(reobj, opattern, line)
     else:
@@ -34,4 +36,15 @@ for line in sys.stdin:
             if m == None: print line
         else:
             if m != None: print m.expand(opattern)
-    
+
+if inputfile:
+    infile = open(inputfile)
+else:
+    infile = sys.stdin
+
+if fulltext:
+    process(re.compile(ipattern, re.S), infile.read())
+else:
+    reobj = re.compile(ipattern)
+    for line in infile:
+        process(reobj, line[0:-1])
