@@ -1,0 +1,4 @@
+#!/bin/sh
+target=$1
+shift
+ocamlbuild -quiet -ocamlc 'ocamlc str.cma' -ocamlopt 'ocamlopt str.cmxa' $target -- $@
