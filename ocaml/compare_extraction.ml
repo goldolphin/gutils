@@ -38,7 +38,7 @@ let filter_by_index w l =
 let get_record whitelist line =
   (* printfn "First: %s" (String.sub line 0 100); *)
   (* printfn "%d" (List.hd whitelist);            *)
-  let header_len = (last_of_list whitelist) + 1 in
+  let header_len = (List.last whitelist) + 1 in
   let splits = split_line header_len line in
   let a = filter_by_index whitelist splits in
   a
@@ -49,8 +49,8 @@ let compare_stream whitelist1 whitelist2 stream1 stream2 =
     let r2 = Stream.next stream2 |> get_record whitelist2 in
     begin
       if r1 <> r2 then begin
-        printfn "%d Left : %s" i (list_to_string identity r1); 
-        printfn "%d Right: %s" i (list_to_string identity r2);
+        printfn "%d Left : %s" i (List.to_string identity r1); 
+        printfn "%d Right: %s" i (List.to_string identity r2);
         failwith "Different records!";
         end
       else
@@ -72,8 +72,8 @@ let compare col_pattern file1 file2 =
   let names1, indexes1 = List.split cols1 in
   let names2, indexes2 = List.split cols2 in
   if (names1) <> names2 then begin
-    printfn "Left header : %s" (list_to_string identity names1); 
-    printfn "Right header: %s" (list_to_string identity names2);
+    printfn "Left header : %s" (List.to_string identity names1); 
+    printfn "Right header: %s" (List.to_string identity names2);
     failwith "wrong headers";
     end    
   else
@@ -84,4 +84,4 @@ let compare col_pattern file1 file2 =
 match Sys.argv with
 | [|_; file1; file2 |] ->
   compare "FuzzyCompleteMatch" file1 file2
-| _ -> invalid_arg (list_to_string identity (Array.to_list Sys.argv));;
+| _ -> failwith (List.to_string identity (Array.to_list Sys.argv));;

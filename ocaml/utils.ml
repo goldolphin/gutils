@@ -17,15 +17,20 @@ let file_stream filename = channel_stream (open_in filename)
 let printfn format =
   Printf.kfprintf (fun ch -> output_char ch '\n') stdout format
 
-let rec last_of_list list =
-  match list with
-  | head::[] -> head
-  | head::tail -> last_of_list tail
-  | [] -> invalid_arg "Empty list!"
-
-let list_to_string converter list =
-  "[" ^ (List.map converter list |> String.concat "; ") ^ "]"
-
 module StrMap = Map.Make(String)
 
 module IntMap = Map.Make(Int32)
+
+module List = struct
+  include List
+  
+  let rec last list =
+    match list with
+    | head::[] -> head
+    | head::tail -> last tail
+    | [] -> invalid_arg "Empty list!"
+
+
+  let to_string converter list =
+    "[" ^ (List.map converter list |> String.concat "; ") ^ "]"
+end
