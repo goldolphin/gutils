@@ -25,9 +25,12 @@ let error msg =
     exit(1)
   end;;
 
+let preprocess pattern =
+  Str.global_replace (Str.regexp "[()|]") "\\\\\\0" pattern
+ 
 let (inPattern, outPattern) = match !patterns with
-  |[o; i] -> (i, o)
-  |[i] -> (i, "\\0")
+  |[o; i] -> (preprocess i, o)
+  |[i] -> (preprocess i, "\\0")
   |_ -> error "Incorrect argument numbers"
 ;;
 
@@ -50,7 +53,7 @@ let inChannel = (match !inputFile with
 (*
 printfn "ip: %s" inPattern;;
 printfn "op: %s" outPattern;;
- *)
+*)
 
 if !fullText then
   inChannel |> read_all |> process (Str.regexp inPattern)
