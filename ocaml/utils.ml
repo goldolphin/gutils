@@ -14,3 +14,8 @@ let file_stream filename = in_stream (open_in filename)
 
 let printfn format =
   Printf.kfprintf (fun ch -> output_char ch '\n') stdout format
+    
+let read_all in_stream =
+  let buffer = Buffer.create 1024 in
+    in_stream |> Stream.iter (fun l -> Buffer.add_string buffer l);
+    Buffer.contents buffer
