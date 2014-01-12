@@ -2,4 +2,4 @@
 export OCAMLRUNPARAM="b" # Enable "back trace" on errors.
 target=$1
 shift
-ocamlbuild -quiet -libs str -ocamlc '-g' -ocamlopt '-g' $target -- "$@"
+ocamlbuild -quiet -libs str -cflags '-g' $target -- "$@"

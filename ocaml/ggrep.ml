@@ -44,7 +44,7 @@ let process regex line =
 
 let inChannel = (match !inputFile with
   | "" -> stdin
-  | s -> open_in s) |> in_stream
+  | s -> open_in s) |> channel_stream
 ;;
 
 if !fullText then
