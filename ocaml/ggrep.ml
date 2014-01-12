@@ -26,7 +26,7 @@ let error msg =
   end;;
 
 let (inPattern, outPattern) = match !patterns with
-  |[i; o] -> (i, o)
+  |[o; i] -> (i, o)
   |[i] -> (i, "\\0")
   |_ -> error "Incorrect argument numbers"
 ;;
@@ -46,6 +46,11 @@ let inChannel = (match !inputFile with
   | "" -> stdin
   | s -> open_in s) |> channel_stream
 ;;
+
+(*
+printfn "ip: %s" inPattern;;
+printfn "op: %s" outPattern;;
+ *)
 
 if !fullText then
   inChannel |> read_all |> process (Str.regexp inPattern)
