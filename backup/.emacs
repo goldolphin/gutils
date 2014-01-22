@@ -12,17 +12,39 @@
 (auto-compression-mode 1) 
 (setq-default make-backup-files nil)
 (add-to-list 'load-path "~/.emacs-lisp")
+(setq initial-scratch-message "")
 ;; (global-hl-line-mode 1)
 (display-time-mode t)
+(setq vc-follow-symlinks t)
+
+;; set encoding
+(prefer-coding-system 'utf-8)
+
+;; set browser
+(setq browse-url-browser-function
+  (if (string= system-type "cygwin")
+    (quote browse-url-default-windows-browser)
+    (quote browse-url-default-macosx-browser)
+  )
+)
+
+;; org mode
+(require 'org-publish)
+(add-to-list 'org-export-backends 'md)
+(setq org-export-publishing-directory "../export")
+
+;; linum
+(global-linum-mode 1)
+(setq linum-format "%d ")
 
 ;; global keys
 (global-set-key "" (quote comment-region))
 
 ;; set windmove keys
-(global-set-key (quote [27 left]) (quote windmove-left))
-(global-set-key (quote [27 right]) (quote windmove-right))
-(global-set-key (quote [27 up]) (quote windmove-up))
-(global-set-key (quote [27 down]) (quote windmove-down))
+(global-set-key [C-left] (quote windmove-left))
+(global-set-key [C-right] (quote windmove-right))
+(global-set-key [C-up] (quote windmove-up))
+(global-set-key [C-down] (quote windmove-down))
 
 ;; ido
 (require 'ido)
@@ -30,8 +52,8 @@
 (global-set-key (kbd "C-x C-r") (quote revert-buffer))
 
 ;; company
-(add-to-list 'load-path "~/.emacs-lisp/company")
-(autoload 'company-mode "company" nil t)
+;; (add-to-list 'load-path "~/.emacs-lisp/company")
+;; (autoload 'company-mode "company" nil t)
 
 ;; set hippie-expand
 (setq hippie-expand-try-functions-list
@@ -51,27 +73,39 @@
         )
 )
 
+;; mediawiki mode
+(require 'mediawiki)
+(add-to-list 'auto-mode-alist '("\\.mw\\'" . mediawiki-mode))
+
+;; markdown mode
+(add-to-list 'load-path "~/workspace/markdown-mode")
+(autoload 'markdown-mode "markdown-mode"
+   "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
 ;; set ibuffer
 (require 'ibuffer)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;; set color theme
-(add-to-list 'load-path "~/.emacs-lisp/color-theme-6.6.0")
-(require 'color-theme)
-(color-theme-initialize)
-(color-theme-word-perfect)
+;; (add-to-list 'load-path "~/.emacs-lisp/color-theme-6.6.0")
+;; (require 'color-theme)
+;; (color-theme-initialize)
+;; (color-theme-word-perfect)
 
 ;; set vtl minor mode
-(require 'vtl)
-(autoload 'turn-on-vtl-mode "vtl" nil t)
-(add-hook 'html-mode-hook 'turn-on-vtl-mode t t)
-(add-hook 'xml-mode-hook 'turn-on-vtl-mode t t)
-(add-hook 'text-mode-hook 'turn-on-vtl-mode t t)
-(setq auto-mode-alist (cons '("\\.vm\\'" . html-mode) auto-mode-alist))
+;; (require 'vtl)
+;; (autoload 'turn-on-vtl-mode "vtl" nil t)
+;; (add-hook 'html-mode-hook 'turn-on-vtl-mode t t)
+;; (add-hook 'xml-mode-hook 'turn-on-vtl-mode t t)
+;; (add-hook 'text-mode-hook 'turn-on-vtl-mode t t)
+;; (setq auto-mode-alist (cons '("\\.vm\\'" . html-mode) auto-mode-alist))
 
 ;; set gud
-(setq gdb-many-windows t)
-(setq gdb-use-inferior-io-buffer t) 
+;; (setq gdb-many-windows t)
+;; (setq gdb-use-inferior-io-buffer t) 
 
 ;;EmacsWiki
 ;;(add-to-list 'load-path "~/.emacs-lisp/emacs-wiki")
@@ -140,16 +174,16 @@
 )
 
 ;; Load CScope
-(require 'xcscope)
-(defun cscope-init ()
-  (cscope-minor-mode)
-  (define-key global-map [(f3)]  'cscope-find-this-symbol)
-  (define-key global-map [(f4)]  'cscope-find-global-definition)
-  ;; (define-key global-map [(f5)] 'cscope-prev-symbol)
-  ;; (define-key global-map [(f6)]  'cscope-next-symbol)
-  ;; (define-key global-map [(f7)]  'cscope-pop-mark)
-  ;; (define-key global-map [(f9)] 'cscope-display-buffer)
-)
+;; (require 'xcscope)
+;; (defun cscope-init ()
+;;   (cscope-minor-mode)
+;;   (define-key global-map [(f3)]  'cscope-find-this-symbol)
+;;   (define-key global-map [(f4)]  'cscope-find-global-definition)
+;;   ;; (define-key global-map [(f5)] 'cscope-prev-symbol)
+;;   ;; (define-key global-map [(f6)]  'cscope-next-symbol)
+;;   ;; (define-key global-map [(f7)]  'cscope-pop-mark)
+;;   ;; (define-key global-map [(f9)] 'cscope-display-buffer)
+;; )
 
 ;; ;; Load CEDET
 ;; ;(setq semantic-load-turn-useful-things-on t)
@@ -269,7 +303,7 @@
  '(ecb-options-version "2.32")
  '(global-font-lock-mode t nil (font-lock))
  '(inhibit-startup-screen t)
- '(menu-bar-mode nil)
+ '(menu-bar-mode t)
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
