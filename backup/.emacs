@@ -16,6 +16,7 @@
 ;; (global-hl-line-mode 1)
 (display-time-mode t)
 (setq vc-follow-symlinks t)
+(setq indent-tabs-mode nil)
 
 ;; set encoding
 (prefer-coding-system 'utf-8)
@@ -160,24 +161,24 @@
 
 ;; Load Global
 ;; (require 'xgtags)
-(defun xgtags-generate-tags ()
-  "Generate gtags reference 1file for global."
-  (interactive)
-  (cd (read-from-minibuffer "Directory: " default-directory))
-  (shell-command "gtags --gtagslabel gtags")
-  (xgtags-make-complete-list)
-)
+;; (defun xgtags-generate-tags ()
+;;   "Generate gtags reference 1file for global."
+;;   (interactive)
+;;   (cd (read-from-minibuffer "Directory: " default-directory))
+;;   (shell-command "gtags --gtagslabel gtags")
+;;   (xgtags-make-complete-list)
+;; )
 
-(defun xgtags-init ()
-  (setq xgtags-mode 1)
-  (define-key c-mode-base-map [(f3)]  'xgtags-find-rtag)
-  (define-key c-mode-base-map [(f4)]  'xgtags-find-tag)
-  (define-key c-mode-base-map [(f5)] 'xgtags-find-symbol)
-  (define-key c-mode-base-map [(f6)]  'xgtags-find-file)
-  (define-key c-mode-base-map [(f7)]  'xgtags-find-pattern)
-  (define-key c-mode-base-map [(f9)] 'xgtags-parse-file)
-  (define-key c-mode-base-map [(f11)] 'xgtags-generate-tags)
-)
+;; (defun xgtags-init ()
+;;   (setq xgtags-mode 1)
+;;   (define-key c-mode-base-map [(f3)]  'xgtags-find-rtag)
+;;   (define-key c-mode-base-map [(f4)]  'xgtags-find-tag)
+;;   (define-key c-mode-base-map [(f5)] 'xgtags-find-symbol)
+;;   (define-key c-mode-base-map [(f6)]  'xgtags-find-file)
+;;   (define-key c-mode-base-map [(f7)]  'xgtags-find-pattern)
+;;   (define-key c-mode-base-map [(f9)] 'xgtags-parse-file)
+;;   (define-key c-mode-base-map [(f11)] 'xgtags-generate-tags)
+;; )
 
 ;; Load CScope
 ;; (require 'xcscope)

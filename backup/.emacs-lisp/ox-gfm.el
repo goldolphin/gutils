@@ -88,13 +88,51 @@ This variable can be set to either `atx' or `setext'."
 		     (quote-section . org-md-example-block)
 		     (section . org-md-section)
 		     (src-block . org-md-src-block)
-		     (table . org-md-identity)
-		     (table-cell . org-md-identity)
-		     (table-row . org-md-identity)
+		     (table . org-md-table)
+		     (table-cell . dump-table-cell)
+		     (table-row . dump-table-row)
 		     (template . org-md-template)
 		     (verbatim . org-md-verbatim)))
 
-;;; Filters
+;;;; Tables
+(defun org-md-table (table contents info)
+  contents
+  ;; (let* ((caption (org-export-get-caption table))
+  ;; 	 (alignspec
+  ;; 	  (if (and (boundp 'org-mw-format-table-no-css)
+  ;; 		   org-mw-format-table-no-css)
+  ;; 	      "align=\"%s\"" "class=\"%s\""))
+  ;; 	 (table-column-specs
+  ;; 	  (function
+  ;; 	   (lambda (table info)
+  ;; 	     (mapconcat
+  ;; 	      (lambda (table-cell)
+  ;; 		(let ((alignment (org-export-table-cell-alignment
+  ;; 				  table-cell info)))
+  ;; 		  ""
+  ;; 		  ))
+  ;; 	      (org-mw-table-first-row-data-cells table info) "\n"))))) ;; End of Let*
+  ;;   (format "{| %s\n%s\n%s\n%s\n|}"
+  ;; 	    (if (not org-mw-default-table-class) ""
+  ;; 	      (format "class=%s"
+  ;; 		      org-mw-default-table-class))
+  ;; 	    (if (not caption) ""
+  ;; 	      (format "|+ %s\n"
+  ;; 		      (org-export-data caption info)))
+  ;; 	    (funcall table-column-specs table info)
+  ;; 	    contents)))
+)
+
+(defun dump-table-cell (blob contents info)
+  (org-export-expand blob contents t)
+;;  (format "|%s" (if (stringp contents) contents ""))
+;;  (format "dump-table:\nblob=%s\ncontents=%s\ninfo=%s" blob contents info)
+)
+(defun dump-table-row (blob contents info)
+  (org-export-expand blob contents t)
+  ;; (format "%s|" contents)
+)
+
 (defun org-md-identity (blob contents info)
   "Transcode BLOB element or object back into Org syntax.
 CONTENTS is its contents, as a string or nil.  INFO is ignored."
@@ -116,6 +154,7 @@ CONTENTS is its contents, as a string or nil.  INFO is ignored."
   ;;  )
 )
 
+;;; Filters
 
 (defun org-md-separate-elements (tree backend info)
   "Make sure elements are separated by at least one blank line.
@@ -126,7 +165,7 @@ back-end used.  INFO is a plist used as a communication channel.
 Assume BACKEND is `md'."
   (org-element-map tree org-element-all-elements
     (lambda (elem)
-      (unless (eq (org-element-type elem) 'org-data)
+      (unless (let ((type (org-element-type elem))) (or (eq type 'org-data) (eq type 'table-row)))
 	(org-element-put-property
 	 elem :post-blank
 	 (let ((post-blank (org-element-property :post-blank elem)))
