@@ -1,7 +1,7 @@
 (setq visible-bell t)
 (fset 'yes-or-no-p 'y-or-n-p)
 (auto-image-file-mode)
-(setq user-full-name "Giv Adler")
+(setq user-full-name "goldolphin")
 (setq user-mail-address "goldolphin@gmail.com")
 (setq default-major-mode 'text-mode)
 (setq show-paren-style 'parenthesis)
@@ -31,7 +31,13 @@
 ;; org mode
 (require 'org-publish)
 (add-to-list 'org-export-backends 'md)
+(add-to-list 'org-export-backends 'odt)
+(add-to-list 'org-export-backends 'org)
+(setq org-descriptive-links nil)
 (setq org-export-publishing-directory "../export")
+(require 'ox-gfm)
+(setq org-md-src-style 'github-flavored)
+(require 'ox-mediawiki)
 
 ;; linum
 (global-linum-mode 1)

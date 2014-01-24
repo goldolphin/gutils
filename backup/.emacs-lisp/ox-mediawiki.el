@@ -92,10 +92,10 @@ by the footnotes themselves."
   :export-block '("MW" "MEDIAWIKI")
   :filters-alist '((:filter-parse-tree . org-mw-separate-elements))
   :menu-entry
-  '(?m "Export to Mediawiki"
-       ((?M "To temporary buffer"
+  '(?w "Export to Mediawiki"
+       ((?W "To temporary buffer"
 	    (lambda (a s v b) (org-mw-export-as-mediawiki a s v)))
-	(?m "To file" (lambda (a s v b) (org-mw-export-to-mediawiki a s v)))
+	(?w "To file" (lambda (a s v b) (org-mw-export-to-mediawiki a s v)))
 	(?o "To file and open"
 	    (lambda (a s v b)
 	      (if a (org-mw-export-to-mediawiki t s v)
@@ -631,7 +631,7 @@ INFO is a plist used as a communication channel."
   "Transcode a TABLE element from Org to HTML.
 CONTENTS is the contents of the table.  INFO is a plist holding
 contextual information."
-  (case (org-element-property :type table)
+  (let ((a (case (org-element-property :type table)
     ;; Case 1: table.el table.  Convert it using appropriate tools.
     (table.el (org-mw-table--table.el-table table info))
     ;; Case 2: Standard table.
@@ -671,7 +671,7 @@ contextual information."
                  (format "|+ %s\n"
                          (org-export-data caption info)))
                (funcall table-column-specs table info)
-               contents)))))
+               contents)))))) a))
 
 ;;; Tables of Contents
 
