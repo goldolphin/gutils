@@ -56,7 +56,7 @@ This variable can be set to either `atx' or `setext'."
 
 (org-export-define-derived-backend 'md 'html
   :export-block '("MD" "MARKDOWN")
-  :filters-alist '((:filter-parse-tree . org-md-separate-elements))
+;;  :filters-alist '((:filter-parse-tree . org-md-separate-elements))
   :menu-entry
   '(?g "Export to GFM"
        ((?G "To temporary buffer"
@@ -89,69 +89,44 @@ This variable can be set to either `atx' or `setext'."
 		     (section . org-md-section)
 		     (src-block . org-md-src-block)
 		     (table . org-md-table)
-		     (table-cell . dump-table-cell)
-		     (table-row . dump-table-row)
+		     (table-row . org-md-table-row)
+		     (table-cell . org-md-table-cell)
 		     (template . org-md-template)
 		     (verbatim . org-md-verbatim)))
 
 ;;;; Tables
-(defun org-md-table (table contents info)
-  contents
-  ;; (let* ((caption (org-export-get-caption table))
-  ;; 	 (alignspec
-  ;; 	  (if (and (boundp 'org-mw-format-table-no-css)
-  ;; 		   org-mw-format-table-no-css)
-  ;; 	      "align=\"%s\"" "class=\"%s\""))
-  ;; 	 (table-column-specs
-  ;; 	  (function
-  ;; 	   (lambda (table info)
-  ;; 	     (mapconcat
-  ;; 	      (lambda (table-cell)
-  ;; 		(let ((alignment (org-export-table-cell-alignment
-  ;; 				  table-cell info)))
-  ;; 		  ""
-  ;; 		  ))
-  ;; 	      (org-mw-table-first-row-data-cells table info) "\n"))))) ;; End of Let*
-  ;;   (format "{| %s\n%s\n%s\n%s\n|}"
-  ;; 	    (if (not org-mw-default-table-class) ""
-  ;; 	      (format "class=%s"
-  ;; 		      org-mw-default-table-class))
-  ;; 	    (if (not caption) ""
-  ;; 	      (format "|+ %s\n"
-  ;; 		      (org-export-data caption info)))
-  ;; 	    (funcall table-column-specs table info)
-  ;; 	    contents)))
+(defun reformat-table (contents)
+  (let ((state :init))
+    (dotimes (index (length contents))
+      (case (aref contents index)
+	(?\n (setq state :init))
+	(?| (if (eql state :init) (setq state :border)))
+	(?+ (if (eql state :border) (aset contents index ?|) (setq state :content)))
+	(?- (if (eql state :init) (setq state :content)))
+	(t  (setq state :content))
+	)
+      )
+    contents
+    )
 )
 
-(defun dump-table-cell (blob contents info)
-  (org-export-expand blob contents t)
-;;  (format "|%s" (if (stringp contents) contents ""))
-;;  (format "dump-table:\nblob=%s\ncontents=%s\ninfo=%s" blob contents info)
+(defun org-md-table (blob contents info)
+  (replace-regexp-in-string "\\`[\r\n]*" "\n" (reformat-table (org-md-identity blob contents info)))
 )
-(defun dump-table-row (blob contents info)
-  (org-export-expand blob contents t)
-  ;; (format "%s|" contents)
+
+(defun org-md-table-row (blob contents info)
+ (org-md-identity blob contents info)
+)
+
+(defun org-md-table-cell (blob contents info)
+  (org-md-identity blob contents info)
 )
 
 (defun org-md-identity (blob contents info)
   "Transcode BLOB element or object back into Org syntax.
 CONTENTS is its contents, as a string or nil.  INFO is ignored."
-;;  (org-remove-indentation
-     (org-export-expand blob contents t);;)
-
-  ;;    (concatenate
-  ;;     'string
-  ;;     "```"
-  ;;     (%string-prop :language src-block)
-  ;;     "\n"
-  ;;     (org-remove-indentation
-  ;;      (org-element-property :value src-block))
-  ;;     "```"))
-  ;; (let ((case-fold-search t))
-  ;;   (replace-regexp-in-string
-  ;;    "^[ \t]*#\\+ATTR_[-_A-Za-z0-9]+:\\(?: .*\\)?\n" ""
-  ;;    (org-export-expand blob contents t))
-  ;;  )
+  (org-remove-indentation
+     (org-export-expand blob contents t))
 )
 
 ;;; Filters
@@ -165,7 +140,7 @@ back-end used.  INFO is a plist used as a communication channel.
 Assume BACKEND is `md'."
   (org-element-map tree org-element-all-elements
     (lambda (elem)
-      (unless (let ((type (org-element-type elem))) (or (eq type 'org-data) (eq type 'table-row)))
+      (unless (let ((type (org-element-type elem))) (message "[%s:%s]" (org-element-property :name elem)  type)  (or (eq type 'item) (eq type 'org-data) (eq type 'table-row)))
 	(org-element-put-property
 	 elem :post-blank
 	 (let ((post-blank (org-element-property :post-blank elem)))
@@ -361,7 +336,7 @@ a communication channel."
 	    (let ((tag (org-element-property :tag item)))
 	      (and tag (format "**%s:** "(org-export-data tag info))))
 	    (and contents
-		 (org-trim (replace-regexp-in-string "^" "    " contents))))))
+		 (org-trim (replace-regexp-in-string "^\\([^|]\\)" "    \\1" contents))))))
 
 
 ;;;; Line Break
@@ -554,7 +529,7 @@ Export is done in a buffer named \"*Org MD Export*\", which will
 be displayed when `org-export-show-temporary-export-buffer' is
 non-nil."
   (interactive)
-  (org-export-to-buffer 'md "*Org MD Export*"
+  (org-export-to-buffer 'md "*Org GFM Export*"
     async subtreep visible-only nil nil (lambda () (text-mode))))
 
 ;;;###autoload

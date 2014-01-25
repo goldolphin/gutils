@@ -30,6 +30,7 @@
 )
 
 ;; org mode
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/org")
 (require 'org-publish)
 (add-to-list 'org-export-backends 'md)
 (add-to-list 'org-export-backends 'odt)
@@ -85,12 +86,11 @@
 (add-to-list 'auto-mode-alist '("\\.mw\\'" . mediawiki-mode))
 
 ;; markdown mode
-(add-to-list 'load-path "~/workspace/markdown-mode")
 (autoload 'markdown-mode "markdown-mode"
    "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
 
 ;; set ibuffer
 (require 'ibuffer)
