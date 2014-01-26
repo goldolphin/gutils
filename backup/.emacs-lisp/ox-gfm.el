@@ -91,8 +91,40 @@ This variable can be set to either `atx' or `setext'."
 		     (table . org-md-table)
 		     (table-row . org-md-table-row)
 		     (table-cell . org-md-table-cell)
+		     (inner-template . org-md-inner-template)
 		     (template . org-md-template)
 		     (verbatim . org-md-verbatim)))
+
+;;; Filters
+
+(defun org-md-separate-elements (tree backend info)
+  "Make sure elements are separated by at least one blank line.
+
+TREE is the parse tree being exported.  BACKEND is the export
+back-end used.  INFO is a plist used as a communication channel.
+
+Assume BACKEND is `md'."
+  (org-element-map tree org-element-all-elements
+    (lambda (elem)
+      (if (let ((type (org-element-type elem))) (eql type 'plain-list));; (or (eq type 'item) (eq type 'org-data) (eq type 'table-row)))
+	(org-element-put-property
+	 elem :post-blank
+	 (let ((post-blank (org-element-property :post-blank elem)))
+	   (if (not post-blank) 2 (max 2 post-blank)))))))
+  ;; Return updated tree.
+  tree)
+
+
+
+;;; Transcode Functions
+
+;;;; Identity
+(defun org-md-identity (blob contents info)
+  "Transcode BLOB element or object back into Org syntax.
+CONTENTS is its contents, as a string or nil.  INFO is ignored."
+  (org-remove-indentation
+     (org-export-expand blob contents t))
+)
 
 ;;;; Tables
 (defun reformat-table (contents)
@@ -122,35 +154,57 @@ This variable can be set to either `atx' or `setext'."
   (org-md-identity blob contents info)
 )
 
-(defun org-md-identity (blob contents info)
-  "Transcode BLOB element or object back into Org syntax.
-CONTENTS is its contents, as a string or nil.  INFO is ignored."
-  (org-remove-indentation
-     (org-export-expand blob contents t))
-)
+;;;; Inner-Template
+(defun org-md-inner-template (contents info)
+  "Return body of document string after HTML conversion.
+CONTENTS is the transcoded contents string.  INFO is a plist
+holding export options."
+  (concat
+   ;; Table of contents.
+   (let ((depth (plist-get info :with-toc)))
+     (when depth (org-md-toc depth info)))
+   ;; Document contents.
+   contents
+   ;; Footnotes section.
+   (org-html-footnote-section info)))
 
-;;; Filters
+;;;; TOC
+(defun org-md-toc (depth info)
+  "Build a table of contents.
+DEPTH is an integer specifying the depth of the table.  INFO is a
+plist used as a communication channel.  Return the table of
+contents as a string, or nil if it is empty."
+  (let* ((index 0)
+	(toc-entries
+	 (mapcar (lambda (headline)
+		   (cons (cons (car (org-export-get-alt-title headline info))
+			       (format "toc_%d" (setq index (1+ index))))
+			 (org-export-get-relative-level headline info)))
+		 (org-export-collect-headlines info))))
+    (when toc-entries
+      (concat "#### Table of Contents\n"
+	      (org-md-toc-text depth toc-entries)
+	      ))))
 
-(defun org-md-separate-elements (tree backend info)
-  "Make sure elements are separated by at least one blank line.
+(defun org-md-toc-text (depth toc-entries)
+  "Return innards of a table of contents, as a string.
+TOC-ENTRIES is an alist where key is an entry title, as a string,
+and value is its relative level, as an integer."
+  (let ((start-level (cdar toc-entries)))
+  (concat
+   (mapconcat
+    (lambda (entry)
+      (let ((headline (caar entry))
+	    (label (cdar entry))
+	    (level (cdr entry)))
+	(if (and (numberp depth) (> level depth))
+	    ""
+	  (concat
+	   (format "%s1. [%s](#%s)\n" (make-string (* 3 (- level start-level)) ? ) headline label)
+	   ""))))
+    toc-entries "")
+   )))
 
-TREE is the parse tree being exported.  BACKEND is the export
-back-end used.  INFO is a plist used as a communication channel.
-
-Assume BACKEND is `md'."
-  (org-element-map tree org-element-all-elements
-    (lambda (elem)
-      (unless (let ((type (org-element-type elem))) (message "[%s:%s]" (org-element-property :name elem)  type)  (or (eq type 'item) (eq type 'org-data) (eq type 'table-row)))
-	(org-element-put-property
-	 elem :post-blank
-	 (let ((post-blank (org-element-property :post-blank elem)))
-	   (if (not post-blank) 1 (max 1 post-blank)))))))
-  ;; Return updated tree.
-  tree)
-
-
-
-;;; Transcode Functions
 
 ;;;; Bold
 
@@ -249,6 +303,7 @@ channel."
   "Transcode HEADLINE element into Markdown format.
 CONTENTS is the headline contents.  INFO is a plist used as
 a communication channel."
+  (replace-regexp-in-string "\\`[\r\n]*" "\n"
   (unless (org-element-property :footnote-section-p headline)
     (let* ((level (org-export-get-relative-level headline info))
 	   (title (org-export-data (org-element-property :title headline) info))
@@ -290,7 +345,7 @@ a communication channel."
 		"\n\n"
 		contents))
        ;; Use "atx" style.
-       (t (concat (make-string level ?#) " " heading tags "\n\n" contents))))))
+       (t (concat (make-string level ?#) " " heading tags "\n\n" contents)))))))
 
 
 ;;;; Horizontal Rule
@@ -384,8 +439,7 @@ a communication channel."
 					   ".")))))))
 	  ((org-export-inline-image-p link org-html-inline-image-rules)
 	   (let ((path (let ((raw-path (org-element-property :path link)))
-			 (if (not (file-name-absolute-p raw-path)) raw-path
-			   (expand-file-name raw-path)))))
+			 (concat type ":" raw-path))))
 	     (format "![%s](%s)"
 		     (let ((caption (org-export-get-caption
 				     (org-export-get-parent-element link))))
@@ -444,7 +498,9 @@ a communication channel."
   "Transcode PLAIN-LIST element into Markdown format.
 CONTENTS is the plain-list contents.  INFO is a plist used as
 a communication channel."
+;;  (format "%s: %s" (org-element-type plain-list)
   contents)
+;;  (replace-regexp-in-string "[\r\n]*\\'" "\n\nA" contents))
 
 
 ;;;; Plain Text
