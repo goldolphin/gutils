@@ -38,33 +38,6 @@
   	       (yes-or-no-p (concat "Do you want to create directory: " dir)))
 	  (make-directory dir))))))
 
-;; org mode
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/org")
-(require 'org-publish)
-(add-to-list 'org-export-backends 'md)
-(add-to-list 'org-export-backends 'odt)
-(add-to-list 'org-export-backends 'org)
-(setq org-descriptive-links nil)
-(setq org-export-publishing-directory "../export")
-(require 'ox-gfm)
-(setq org-md-src-style 'github-flavored)
-(require 'ox-mediawiki)
-
-;; marmalade
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-
-;; linum
-(global-linum-mode 1)
-(setq linum-format "%d ")
-
-;; multiple cursors
-(require 'multiple-cursors)
-(global-set-key (kbd "C-.") 'mc/mark-next-like-this)
-(global-set-key (kbd "C->") 'mc/unmark-next-like-this)
-(global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-<") 'mc/unmark-previous-like-this)
-(global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)
-
 ;; global keys
 (global-set-key "" (quote comment-region))
 
@@ -78,6 +51,34 @@
 (require 'ido)
 (ido-mode t)
 (global-set-key (kbd "C-x C-r") (quote revert-buffer))
+
+;; Initialization for plugins from package system.
+(add-hook 'after-init-hook 'my-after-init-hook)
+(defun my-after-init-hook ()
+  ;; linum
+  (global-linum-mode)
+  (setq linum-format "%d ")
+
+  ;; org mode
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
+  (require 'org-publish)
+  (add-to-list 'org-export-backends 'md)
+  (add-to-list 'org-export-backends 'odt)
+  (add-to-list 'org-export-backends 'org)
+  (setq org-descriptive-links nil)
+  (setq org-export-publishing-directory "../export")
+  (require 'ox-gfm)
+  (setq org-md-src-style 'github-flavored)
+  (require 'ox-mediawiki)
+
+  ;; multiple cursors
+  (require 'multiple-cursors)
+  (global-set-key (kbd "C-.") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C->") 'mc/unmark-next-like-this)
+  (global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-<") 'mc/unmark-previous-like-this)
+  (global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)
+)
 
 ;; company
 ;; (add-to-list 'load-path "~/.emacs-lisp/company")
@@ -314,10 +315,10 @@
 ;; (setq matlab-highlight-cross-function-variables t)
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(LaTeX-mode-hook (quote (LaTeX-preview-setup preview-mode-setup turn-on-reftex my-tex-mode-hook)) t)
  '(TeX-PDF-mode t)
  '(TeX-command-list (quote (("TeX" "%(PDF)%(tex) %S%(PDFout) \"%(mode)\\input %t\"" TeX-run-TeX nil (plain-tex-mode texinfo-mode ams-tex-mode) :help "Run plain TeX") ("LaTeX" "%l \"%(mode)\\input{%t}\"" TeX-run-TeX nil (latex-mode doctex-mode) :help "Run LaTeX") ("Dvi To Pdf" "dvipdfmx %s.dvi" TeX-run-command nil t) ("View" "%V" TeX-run-discard t t :help "Run Viewer") ("View Pdf" "acroread %s.pdf" TeX-run-command nil t) ("Makeinfo" "makeinfo %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with Info output") ("Makeinfo HTML" "makeinfo --html %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with HTML output") ("AmSTeX" "%(PDF)amstex %S%(PDFout) \"%(mode)\\input %t\"" TeX-run-TeX nil (ams-tex-mode) :help "Run AMSTeX") ("ConTeXt" "texexec --once --texutil %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt once") ("ConTeXt Full" "texexec %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt until completion") ("ConTeXt Clean" "texutil --purgeall" TeX-run-interactive nil (context-mode) :help "Clean temporary ConTeXt files") ("BibTeX" "bibtex %s" TeX-run-BibTeX nil t :help "Run BibTeX") ("Print" "%p" TeX-run-command t t :help "Print the file") ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command) ("File" "%(o?)dvips %d -o %f " TeX-run-command t t :help "Generate PostScript file") ("Index" "makeindex %s" TeX-run-command nil t :help "Create index file") ("Check" "lacheck %s" TeX-run-compile nil (latex-mode) :help "Check LaTeX file for correctness") ("Spell" "<ignored>" TeX-run-ispell-on-document nil t :help "Spell-check the document") ("Other" "" TeX-run-command t t :help "Run an arbitrary command"))))
@@ -326,20 +327,20 @@
  '(c-mode-common-hook (quote (my-c-mode-hook)))
  '(column-number-mode t)
  '(company-backends (quote (company-elisp company-nxml company-css company-eclim company-clang company-xcode company-files company-dabbrev)))
+ '(display-time-mode t)
  '(ecb-options-version "2.32")
  '(global-font-lock-mode t nil (font-lock))
  '(inhibit-startup-screen t)
- '(menu-bar-mode t)
+ '(package-archives (quote (("marmalade" . "http://marmalade-repo.org/packages/") ("gnu" . "http://elpa.gnu.org/packages/"))))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
  '(tool-bar-mode nil)
- '(transient-mark-mode t)
  '(truncate-partial-width-windows nil)
  '(x-select-enable-clipboard t))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
