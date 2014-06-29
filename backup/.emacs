@@ -331,7 +331,7 @@
  '(ecb-options-version "2.32")
  '(global-font-lock-mode t nil (font-lock))
  '(inhibit-startup-screen t)
- '(package-archives (quote (("marmalade" . "http://marmalade-repo.org/packages/") ("gnu" . "http://elpa.gnu.org/packages/"))))
+ '(package-archives (quote (("melpa" . "http://melpa.milkbox.net/packages/") ("marmalade" . "http://marmalade-repo.org/packages/") ("gnu" . "http://elpa.gnu.org/packages/"))))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
