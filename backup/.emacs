@@ -29,6 +29,15 @@
   )
 )
 
+;; create parent directory automatically
+(add-hook 'before-save-hook (lambda ()
+  (unless (file-exists-p buffer-file-name)
+    (let ((dir (file-name-directory buffer-file-name)))
+      (message "%s" dir)
+      (if (and (not (file-exists-p dir))
+  	       (yes-or-no-p (concat "Do you want to create directory: " dir)))
+	  (make-directory dir))))))
+
 ;; org mode
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/org")
 (require 'org-publish)
@@ -41,9 +50,20 @@
 (setq org-md-src-style 'github-flavored)
 (require 'ox-mediawiki)
 
+;; marmalade
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+
 ;; linum
 (global-linum-mode 1)
 (setq linum-format "%d ")
+
+;; multiple cursors
+(require 'multiple-cursors)
+(global-set-key (kbd "C-.") 'mc/mark-next-like-this)
+(global-set-key (kbd "C->") 'mc/unmark-next-like-this)
+(global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-<") 'mc/unmark-previous-like-this)
+(global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)
 
 ;; global keys
 (global-set-key "" (quote comment-region))
@@ -245,10 +265,9 @@
 
 (defun my-c-mode-hook ()
 ;;  (semantic-default-c-setup)
-  (c-set-style "gnu")
+  (c-set-style "stroustrup")
   (setq c-basic-offset 4)
   (setq indent-tabs-mode nil)
-  (cscope-init)
 ;;  (xgtags-init)
   (hs-minor-mode t)
 ;;  (font-lock-add-keywords 'c-mode '("\\<#if 0\\>.*\\<#endif\\>" . font-lock-comment-face))
