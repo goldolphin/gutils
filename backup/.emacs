@@ -59,9 +59,17 @@
   (global-linum-mode)
   (setq linum-format "%d ")
 
+  ;; multiple cursors
+  (require 'multiple-cursors)
+  (global-set-key (kbd "C-.") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C->") 'mc/unmark-next-like-this)
+  (global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-<") 'mc/unmark-previous-like-this)
+  (global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)
+
   ;; org mode
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
-  (require 'org-publish)
+  (require 'org)
   (add-to-list 'org-export-backends 'md)
   (add-to-list 'org-export-backends 'odt)
   (add-to-list 'org-export-backends 'org)
@@ -71,13 +79,9 @@
   (setq org-md-src-style 'github-flavored)
   (require 'ox-mediawiki)
 
-  ;; multiple cursors
-  (require 'multiple-cursors)
-  (global-set-key (kbd "C-.") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C->") 'mc/unmark-next-like-this)
-  (global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-<") 'mc/unmark-previous-like-this)
-  (global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)
+  ;; Load session
+  (require 'session)
+  (session-initialize)
 )
 
 ;; company
@@ -171,10 +175,6 @@
 ;;(setq locale-coding-system 'chinese-gbk)
 ;;(set-selection-coding-system 'chinese-gbk)
 ;;(set-clipboard-coding-system 'chinese-gbk)
-
-;; Load session
-;;(require 'session)
-;;(add-hook 'after-init-hook 'session-initialize)
 
 ;; Load tabbar
 ;;(require 'tabbar)
@@ -331,7 +331,7 @@
  '(ecb-options-version "2.32")
  '(global-font-lock-mode t nil (font-lock))
  '(inhibit-startup-screen t)
- '(package-archives (quote (("marmalade" . "http://marmalade-repo.org/packages/") ("gnu" . "http://elpa.gnu.org/packages/"))))
+ '(package-archives (quote (("melpa" . "http://melpa.milkbox.net/packages/") ("marmalade" . "http://marmalade-repo.org/packages/") ("gnu" . "http://elpa.gnu.org/packages/"))))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
