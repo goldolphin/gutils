@@ -46,6 +46,8 @@
 (global-set-key [C-right] (quote windmove-right))
 (global-set-key [C-up] (quote windmove-up))
 (global-set-key [C-down] (quote windmove-down))
+(global-set-key [s-left] (quote move-beginning-of-line))
+(global-set-key [s-right] (quote move-end-of-line))
 
 ;; ido
 (require 'ido)
