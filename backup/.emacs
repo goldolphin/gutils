@@ -1,3 +1,21 @@
+;;;; Utilities
+(defun g/require (feature &optional initializer)
+  "Flexible require."
+  (if (require feature nil t)
+      (if initializer
+	  (eval initializer))
+    (warn "Error on loading %s" feature)))
+
+(defun g/create-parents ()
+  "Create parent directories"
+  (unless (file-exists-p buffer-file-name)
+    (let ((dir (file-name-directory buffer-file-name)))
+      (message "%s" dir)
+      (if (and (not (file-exists-p dir))
+  	       (yes-or-no-p (concat "Do you want to create directory: " dir)))
+	  (make-directory dir)))))
+
+;;;; Configurations
 (setq visible-bell t)
 (fset 'yes-or-no-p 'y-or-n-p)
 (auto-image-file-mode)
@@ -30,13 +48,7 @@
 )
 
 ;; create parent directory automatically
-(add-hook 'before-save-hook (lambda ()
-  (unless (file-exists-p buffer-file-name)
-    (let ((dir (file-name-directory buffer-file-name)))
-      (message "%s" dir)
-      (if (and (not (file-exists-p dir))
-  	       (yes-or-no-p (concat "Do you want to create directory: " dir)))
-	  (make-directory dir))))))
+(add-hook 'before-save-hook 'g/create-parents)
 
 ;; global keys
 (global-set-key "" (quote comment-region))
@@ -46,6 +58,8 @@
 (global-set-key [C-right] (quote windmove-right))
 (global-set-key [C-up] (quote windmove-up))
 (global-set-key [C-down] (quote windmove-down))
+
+;; set mac osx keys
 (global-set-key [s-left] (quote move-beginning-of-line))
 (global-set-key [s-right] (quote move-end-of-line))
 
@@ -54,36 +68,52 @@
 (ido-mode t)
 (global-set-key (kbd "C-x C-r") (quote revert-buffer))
 
+;; linum
+(global-linum-mode)
+(setq linum-format "%d ")
+
+;; set ibuffer
+(require 'ibuffer)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+
 ;; Initialization for plugins from package system.
 (add-hook 'after-init-hook 'my-after-init-hook)
 (defun my-after-init-hook ()
-  ;; linum
-  (global-linum-mode)
-  (setq linum-format "%d ")
-
   ;; multiple cursors
-  (require 'multiple-cursors)
-  (global-set-key (kbd "C-.") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C->") 'mc/unmark-next-like-this)
-  (global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-<") 'mc/unmark-previous-like-this)
-  (global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)
+  (g/require 'multiple-cursors
+	     '(progn
+	       (global-set-key (kbd "C-.") 'mc/mark-next-like-this)
+	       (global-set-key (kbd "C->") 'mc/unmark-next-like-this)
+	       (global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
+	       (global-set-key (kbd "C-<") 'mc/unmark-previous-like-this)
+	       (global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)))
 
   ;; org mode
-  (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
-  (require 'org)
-  (add-to-list 'org-export-backends 'md)
-  (add-to-list 'org-export-backends 'odt)
-  (add-to-list 'org-export-backends 'org)
-  (setq org-descriptive-links nil)
-  (setq org-export-publishing-directory "../export")
-  (require 'ox-gfm)
-  (setq org-md-src-style 'github-flavored)
-  (require 'ox-mediawiki)
+  (g/require 'org
+	     '(progn
+	       (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
+	       (add-to-list 'org-export-backends 'md)
+	       (add-to-list 'org-export-backends 'odt)
+	       (add-to-list 'org-export-backends 'org)
+	       (setq org-descriptive-links nil)
+	       (setq org-export-publishing-directory "../export")
+	       (require 'ox-gfm)
+	       (setq org-md-src-style 'github-flavored)
+	       (require 'ox-mediawiki)))
+
+  ;; mediawiki mode
+  (g/require 'mediawiki
+	     '(add-to-list 'auto-mode-alist '("\\.mw\\'" . mediawiki-mode)))
+
+  ;; markdown mode
+  (autoload 'markdown-mode "markdown-mode"
+    "Major mode for editing Markdown files" t)
+  (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
 
   ;; Load session
-  (require 'session)
-  (session-initialize)
+  (g/require 'session '(session-initialize))
 )
 
 ;; company
@@ -107,21 +137,6 @@
         try-expand-whole-kill
         )
 )
-
-;; mediawiki mode
-(require 'mediawiki)
-(add-to-list 'auto-mode-alist '("\\.mw\\'" . mediawiki-mode))
-
-;; markdown mode
-(autoload 'markdown-mode "markdown-mode"
-   "Major mode for editing Markdown files" t)
-(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
-
-;; set ibuffer
-(require 'ibuffer)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;; set color theme
 ;; (add-to-list 'load-path "~/.emacs-lisp/color-theme-6.6.0")
