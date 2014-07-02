@@ -19,7 +19,7 @@
 	  (make-directory dir)))))
 
 ;;;; Configurations
-(setq visible-bell t)
+(setq visible-bell nil)
 (fset 'yes-or-no-p 'y-or-n-p)
 (auto-image-file-mode)
 (setq user-full-name "goldolphin")
@@ -65,6 +65,8 @@
 ;; set mac osx keys
 (global-set-key [s-left] (quote move-beginning-of-line))
 (global-set-key [s-right] (quote move-end-of-line))
+(global-set-key [s-up] (quote beginning-of-buffer))
+(global-set-key [s-down] (quote end-of-buffer))
 
 ;; ido
 (require 'ido)
