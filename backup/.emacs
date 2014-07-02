@@ -1,10 +1,13 @@
 ;;;; Utilities
+(defun g/safe-eval (form)
+  (condition-case err (eval form)
+    (error (warn "%s" (error-message-string err) nil))))
+
 (defun g/require (feature &optional initializer)
   "Flexible require."
-  (if (require feature nil t)
+  (if (g/safe-eval '(require feature))
       (if initializer
-	  (eval initializer))
-    (warn "Error on loading %s" feature)))
+	  (g/safe-eval initializer))))
 
 (defun g/create-parents ()
   "Create parent directories"
@@ -68,10 +71,6 @@
 (ido-mode t)
 (global-set-key (kbd "C-x C-r") (quote revert-buffer))
 
-;; linum
-(global-linum-mode)
-(setq linum-format "%d ")
-
 ;; set ibuffer
 (require 'ibuffer)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -79,6 +78,10 @@
 ;; Initialization for plugins from package system.
 (add-hook 'after-init-hook 'my-after-init-hook)
 (defun my-after-init-hook ()
+  ;; linum
+  (global-linum-mode)
+  (setq linum-format "%d ")
+
   ;; multiple cursors
   (g/require 'multiple-cursors
 	     '(progn
@@ -360,4 +363,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(linum ((t (:inherit (shadow default) :foreground "dark cyan")))))
