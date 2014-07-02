@@ -93,6 +93,17 @@
 	       (global-set-key (kbd "C-<") 'mc/unmark-previous-like-this)
 	       (global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)))
 
+  ;; auto complete
+  (global-auto-complete-mode)
+
+  ;; ac geiser
+  (g/require 'ac-geiser
+	     '(progn
+		(add-hook 'geiser-mode-hook 'ac-geiser-setup)
+		(add-hook 'geiser-repl-mode-hook 'ac-geiser-setup)
+		(eval-after-load "auto-complete"
+		  '(add-to-list 'ac-modes 'geiser-repl-mode))))
+
   ;; org mode
   (g/require 'org
 	     '(progn
@@ -284,7 +295,7 @@
     )
 )
 
-(define-key global-map [(9)] 'c-indent-or-complete)
+;; (define-key global-map [(9)] 'c-indent-or-complete)
 
 (defun my-c-mode-hook ()
 ;;  (semantic-default-c-setup)
@@ -341,16 +352,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(LaTeX-mode-hook (quote (LaTeX-preview-setup preview-mode-setup turn-on-reftex my-tex-mode-hook)) t)
- '(TeX-PDF-mode t)
- '(TeX-command-list (quote (("TeX" "%(PDF)%(tex) %S%(PDFout) \"%(mode)\\input %t\"" TeX-run-TeX nil (plain-tex-mode texinfo-mode ams-tex-mode) :help "Run plain TeX") ("LaTeX" "%l \"%(mode)\\input{%t}\"" TeX-run-TeX nil (latex-mode doctex-mode) :help "Run LaTeX") ("Dvi To Pdf" "dvipdfmx %s.dvi" TeX-run-command nil t) ("View" "%V" TeX-run-discard t t :help "Run Viewer") ("View Pdf" "acroread %s.pdf" TeX-run-command nil t) ("Makeinfo" "makeinfo %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with Info output") ("Makeinfo HTML" "makeinfo --html %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with HTML output") ("AmSTeX" "%(PDF)amstex %S%(PDFout) \"%(mode)\\input %t\"" TeX-run-TeX nil (ams-tex-mode) :help "Run AMSTeX") ("ConTeXt" "texexec --once --texutil %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt once") ("ConTeXt Full" "texexec %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt until completion") ("ConTeXt Clean" "texutil --purgeall" TeX-run-interactive nil (context-mode) :help "Clean temporary ConTeXt files") ("BibTeX" "bibtex %s" TeX-run-BibTeX nil t :help "Run BibTeX") ("Print" "%p" TeX-run-command t t :help "Print the file") ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command) ("File" "%(o?)dvips %d -o %f " TeX-run-command t t :help "Generate PostScript file") ("Index" "makeindex %s" TeX-run-command nil t :help "Create index file") ("Check" "lacheck %s" TeX-run-compile nil (latex-mode) :help "Check LaTeX file for correctness") ("Spell" "<ignored>" TeX-run-ispell-on-document nil t :help "Spell-check the document") ("Other" "" TeX-run-command t t :help "Run an arbitrary command"))))
- '(TeX-output-view-style (quote (("^dvi$" ("^landscape$" "^pstricks$\\|^pst-\\|^psfrag$") "%(o?)dvips -t landscape %d -o && gv %f") ("^dvi$" "^pstricks$\\|^pst-\\|^psfrag$" "%(o?)dvips %d -o && gv %f") ("^dvi$" ("^a4\\(?:dutch\\|paper\\|wide\\)\\|sem-a4$" "^landscape$") "%(o?)xdvi %dS -paper a4r -s 0 %d") ("^dvi$" "^a4\\(?:dutch\\|paper\\|wide\\)\\|sem-a4$" "%(o?)xdvi %dS -paper a4 %d") ("^dvi$" ("^a5\\(?:comb\\|paper\\)$" "^landscape$") "%(o?)xdvi %dS -paper a5r -s 0 %d") ("^dvi$" "^a5\\(?:comb\\|paper\\)$" "%(o?)xdvi %dS -paper a5 %d") ("^dvi$" "^b5paper$" "%(o?)xdvi %dS -paper b5 %d") ("^dvi$" "^letterpaper$" "%(o?)xdvi %dS -paper us %d") ("^dvi$" "^legalpaper$" "%(o?)xdvi %dS -paper legal %d") ("^dvi$" "^executivepaper$" "%(o?)xdvi %dS -paper 7.25x10.5in %d") ("^dvi$" "." "%(o?)xdvi %dS %d") ("^pdf$" "." "acroread %o") ("^html?$" "." "netscape %o"))))
- '(TeX-style-path (quote ("style" "auto" "/usr/local/share/emacs/site-lisp/auctex/style" "/usr/local/var/auctex" "~/.emacs-lisp")))
- '(c-mode-common-hook (quote (my-c-mode-hook)))
+ '(ac-auto-show-menu 0.2)
+ '(ac-quick-help-delay 0.0)
  '(column-number-mode t)
- '(company-backends (quote (company-elisp company-nxml company-css company-eclim company-clang company-xcode company-files company-dabbrev)))
  '(display-time-mode t)
- '(ecb-options-version "2.32")
+ '(geiser-mode-smart-tab-p t)
+ '(geiser-mode-start-repl-p t)
  '(global-font-lock-mode t nil (font-lock))
  '(inhibit-startup-screen t)
  '(lazy-highlight-initial-delay 0)
