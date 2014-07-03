@@ -87,11 +87,13 @@
   ;; multiple cursors
   (g/require 'multiple-cursors
 	     '(progn
-	       (global-set-key (kbd "C-.") 'mc/mark-next-like-this)
-	       (global-set-key (kbd "C->") 'mc/unmark-next-like-this)
-	       (global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
-	       (global-set-key (kbd "C-<") 'mc/unmark-previous-like-this)
-	       (global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)))
+		(define-key mc/keymap (kbd "<return>") nil)
+		(define-key mc/keymap (kbd "M-ESC ESC") 'multiple-cursors-mode)
+		(global-set-key (kbd "C-.") 'mc/mark-next-like-this)
+		(global-set-key (kbd "C->") 'mc/unmark-next-like-this)
+		(global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
+		(global-set-key (kbd "C-<") 'mc/unmark-previous-like-this)
+		(global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)))
 
   ;; auto complete
   (global-auto-complete-mode)
