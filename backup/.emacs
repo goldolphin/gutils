@@ -96,7 +96,9 @@
 		(global-set-key (kbd "C-c C-.") 'mc/mark-all-like-this)))
 
   ;; auto complete
-  (global-auto-complete-mode)
+  (g/require 'auto-complete-config
+	     '(progn
+		(ac-config-default)))
 
   ;; ac geiser
   (g/require 'ac-geiser
@@ -111,7 +113,6 @@
 	     '(progn
 	       (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
 	       (add-to-list 'org-export-backends 'md)
-	       (add-to-list 'org-export-backends 'odt)
 	       (add-to-list 'org-export-backends 'org)
 	       (setq org-descriptive-links nil)
 	       (setq org-export-publishing-directory "../export")
