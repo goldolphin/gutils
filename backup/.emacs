@@ -100,6 +100,13 @@
 	     '(progn
 		(ac-config-default)))
 
+  ;; geiser
+  (g/require 'geiser
+	     '(eval-after-load 'geiser-mode
+		'(progn
+		   (define-key geiser-mode-map (kbd "C-.") nil))))
+		
+  
   ;; ac geiser
   (g/require 'ac-geiser
 	     '(progn
