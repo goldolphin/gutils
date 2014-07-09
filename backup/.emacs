@@ -13,10 +13,10 @@
   "Create parent directories"
   (unless (file-exists-p buffer-file-name)
     (let ((dir (file-name-directory buffer-file-name)))
-      (message "%s" dir)
+      ;; (message "%s" dir)
       (if (and (not (file-exists-p dir))
   	       (yes-or-no-p (concat "Do you want to create directory: " dir)))
-	  (make-directory dir)))))
+	  (make-directory dir t)))))
 
 ;;;; Configurations
 (setq visible-bell nil)
