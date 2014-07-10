@@ -9,6 +9,18 @@
       (if initializer
 	  (g/safe-eval initializer))))
 
+(defun g/install (package)
+  "Flexible install."
+  (if (featurep package)
+      (message "Ignore installed package: %s." package)
+    (progn
+      (message "Install package: %s." package)
+      (package-install package))))
+
+(defun g/install-batch (packages)
+  "Install packages in a batch."
+  (mapc 'g/install packages))
+
 (defun g/create-parents ()
   "Create parent directories"
   (unless (file-exists-p buffer-file-name)
@@ -17,6 +29,19 @@
       (if (and (not (file-exists-p dir))
   	       (yes-or-no-p (concat "Do you want to create directory: " dir)))
 	  (make-directory dir t)))))
+
+;;;; Packages
+(defvar packages '(
+multiple-cursors
+auto-complete-config
+geiser
+ac-geiser
+org
+mediawiki
+helm-config
+session
+))
+;; (g/install-batch packages)
 
 ;;;; Configurations
 (setq visible-bell nil)
@@ -54,7 +79,8 @@
 (add-hook 'before-save-hook 'g/create-parents)
 
 ;; global keys
-(global-set-key "" (quote comment-region))
+(global-set-key (kbd "C-c C-c") (quote comment-region))
+(global-set-key (kbd "C-x C-r") (quote revert-buffer))
 
 ;; set windmove keys
 (global-set-key [C-left] (quote windmove-left))
@@ -69,13 +95,12 @@
 (global-set-key [s-down] (quote end-of-buffer))
 
 ;; ido
-(require 'ido)
-(ido-mode t)
-(global-set-key (kbd "C-x C-r") (quote revert-buffer))
+;; (require 'ido)
+;; (ido-mode t)
 
 ;; set ibuffer
-(require 'ibuffer)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
+;; (require 'ibuffer)
+;; (global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;; Initialization for plugins from package system.
 (add-hook 'after-init-hook 'my-after-init-hook)
@@ -138,13 +163,14 @@
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
 
+  ;; helm
+  (g/require 'helm-config
+	     '(progn
+		(helm-mode t)))
+
   ;; Load session
   (g/require 'session '(session-initialize))
 )
-
-;; company
-;; (add-to-list 'load-path "~/.emacs-lisp/company")
-;; (autoload 'company-mode "company" nil t)
 
 ;; set hippie-expand
 (setq hippie-expand-try-functions-list
