@@ -33,13 +33,14 @@
 ;;;; Packages
 (defvar packages '(
 multiple-cursors
-auto-complete-config
+auto-complete
 geiser
 ac-geiser
 org
 mediawiki
-helm-config
+helm
 session
+magit
 ))
 ;; (g/install-batch packages)
 
