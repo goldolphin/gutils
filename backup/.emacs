@@ -19,7 +19,8 @@
 
 (defun g/install-batch (packages)
   "Install packages in a batch."
-  (mapc 'g/install packages))
+  (mapc 'g/install packages)
+  (message "All packages are installed."))
 
 (defun g/create-parents ()
   "Create parent directories"
