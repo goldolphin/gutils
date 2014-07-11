@@ -12,15 +12,17 @@
 (defun g/install (package)
   "Flexible install."
   (if (featurep package)
-      (message "Ignore installed package: %s." package)
+      (progn (message "Ignore installed package: %s." package) nil)
     (progn
       (message "Install package: %s." package)
-      (package-install package))))
+      (package-install package)
+      t)))
 
 (defun g/install-batch (packages)
   "Install packages in a batch."
-  (mapc 'g/install packages)
-  (message "All packages are installed."))
+  (let ((installed (length (remove-if 'null (mapcar 'g/install packages))))
+	(all (length packages)))
+    (message "%d/%d packages are installed" installed all)))
 
 (defun g/create-parents ()
   "Create parent directories"
@@ -39,11 +41,13 @@ geiser
 ac-geiser
 org
 mediawiki
-helm
+;; helm
 session
 magit
+smex
 ))
-;; (g/install-batch packages)
+
+;; (progn (package-refresh-contents) (g/install-batch packages))
 
 ;;;; Configurations
 (setq visible-bell nil)
@@ -97,8 +101,8 @@ magit
 (global-set-key [s-down] (quote end-of-buffer))
 
 ;; ido
-;; (require 'ido)
-;; (ido-mode t)
+(require 'ido)
+(ido-mode t)
 
 ;; set ibuffer
 ;; (require 'ibuffer)
@@ -165,10 +169,15 @@ magit
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
 
-  ;; helm
-  (g/require 'helm-config
+  ;; ;; helm
+  ;; (g/require 'helm-config
+  ;; 	     '(progn
+  ;; 		(helm-mode t)))
+
+  ;; smex
+  (g/require 'smex
 	     '(progn
-		(helm-mode t)))
+		(global-set-key (kbd "M-x") 'smex)))
 
   ;; Load session
   (g/require 'session '(session-initialize))
