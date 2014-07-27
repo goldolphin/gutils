@@ -65,7 +65,7 @@ smex
 (setq-default make-backup-files nil)
 (add-to-list 'load-path "~/.emacs-lisp")
 (setq initial-scratch-message "")
-;; (global-hl-line-mode 1)
+(global-hl-line-mode)
 (display-time-mode t)
 (setq vc-follow-symlinks t)
 (setq indent-tabs-mode nil)
