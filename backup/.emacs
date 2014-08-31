@@ -1,3 +1,10 @@
+;;; .emacs --- .emacs of goldolphin
+
+;;; Commentary:
+;; .emacs of goldolphin.
+
+;;; Code:
+
 ;;;; Utilities
 (defun g/safe-eval (form)
   (condition-case err (eval form)
@@ -34,7 +41,7 @@
 	  (make-directory dir t)))))
 
 ;;;; Packages
-(defvar packages '(
+(defvar g/packages '(
 multiple-cursors
 auto-complete
 geiser
@@ -45,9 +52,11 @@ mediawiki
 session
 magit
 smex
+ac-js2
+skewer-mode
 ))
 
-;; (progn (package-refresh-contents) (g/install-batch packages))
+;; (progn (package-refresh-contents) (g/install-batch g/packages))
 
 ;;;; Configurations
 (setq visible-bell nil)
@@ -55,20 +64,23 @@ smex
 (auto-image-file-mode)
 (setq user-full-name "goldolphin")
 (setq user-mail-address "goldolphin@gmail.com")
-(setq default-major-mode 'text-mode)
-(setq show-paren-style 'parenthesis)
+;; (setq major-mode 'text-mode)
 (setq frame-title-format "%f -- %F")
-(setq dired-recursive-copies 'top)
-(setq dired-recursive-deletes 'top)
 (setq mouse-yank-at-point t)
 (auto-compression-mode 1) 
 (setq-default make-backup-files nil)
 (add-to-list 'load-path "~/.emacs-lisp")
 (setq initial-scratch-message "")
-(global-hl-line-mode)
 (display-time-mode t)
 (setq vc-follow-symlinks t)
 (setq indent-tabs-mode nil)
+(setq-default cursor-type 'bar)
+
+;; hl-line-mode
+(global-hl-line-mode)
+(if (display-graphic-p)
+    (set-face-background hl-line-face "#ffffd0")
+    (set-face-background hl-line-face "darkblue"))
 
 ;; set encoding
 (prefer-coding-system 'utf-8)
@@ -113,7 +125,6 @@ smex
 (defun my-after-init-hook ()
   ;; linum
   (global-linum-mode)
-  (setq linum-format "%d ")
 
   ;; multiple cursors
   (g/require 'multiple-cursors
@@ -129,22 +140,22 @@ smex
   ;; auto complete
   (g/require 'auto-complete-config
 	     '(progn
-		(ac-config-default)))
+		(ac-config-default)
+		(add-hook 'lisp-interaction-mode-hook 'ac-emacs-lisp-mode-setup)))
 
-  ;; geiser
-  (g/require 'geiser
-	     '(eval-after-load 'geiser-mode
-		'(progn
-		   (define-key geiser-mode-map (kbd "C-.") nil))))
+  ;; ;; geiser
+  ;; (g/require 'geiser
+  ;; 	     '(eval-after-load 'geiser-mode
+  ;; 		'(progn
+  ;; 		   (define-key geiser-mode-map (kbd "C-.") nil))))
 		
-  
-  ;; ac geiser
-  (g/require 'ac-geiser
-	     '(progn
-		(add-hook 'geiser-mode-hook 'ac-geiser-setup)
-		(add-hook 'geiser-repl-mode-hook 'ac-geiser-setup)
-		(eval-after-load "auto-complete"
-		  '(add-to-list 'ac-modes 'geiser-repl-mode))))
+  ;; ;; ac geiser
+  ;; (g/require 'ac-geiser
+  ;; 	     '(progn
+  ;; 		(add-hook 'geiser-mode-hook 'ac-geiser-setup)
+  ;; 		(add-hook 'geiser-repl-mode-hook 'ac-geiser-setup)
+  ;; 		(eval-after-load "auto-complete"
+  ;; 		  '(add-to-list 'ac-modes 'geiser-repl-mode))))
 
   ;; org mode
   (g/require 'org
@@ -178,6 +189,23 @@ smex
   (g/require 'smex
 	     '(progn
 		(global-set-key (kbd "M-x") 'smex)))
+
+  ;; flycheck
+  (g/require 'flycheck
+	     '(global-flycheck-mode))
+
+  ;; js2
+  (g/require 'ac-js2
+	     '(progn
+		(add-hook 'js2-mode-hook 'ac-js2-mode)
+		(setq ac-js2-evaluate-calls t)))
+
+  ;; skewer mode
+  (g/require 'skewer-mode
+	     '(progn
+		(add-hook 'js2-mode-hook 'skewer-mode)
+		(add-hook 'css-mode-hook 'skewer-css-mode)
+		(add-hook 'html-mode-hook 'skewer-html-mode)))
 
   ;; Load session
   (g/require 'session '(session-initialize))
@@ -411,6 +439,7 @@ smex
  '(package-archives (quote (("melpa" . "http://melpa.milkbox.net/packages/") ("marmalade" . "http://marmalade-repo.org/packages/") ("gnu" . "http://elpa.gnu.org/packages/"))))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
+ '(show-paren-style (quote parenthesis))
  '(size-indication-mode t)
  '(tool-bar-mode nil)
  '(truncate-partial-width-windows nil)
