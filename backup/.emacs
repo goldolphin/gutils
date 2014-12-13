@@ -6,6 +6,12 @@
 ;;; Code:
 
 ;;;; Utilities
+(defun read-from-file (filePath)
+  "Return filePath's content."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (buffer-string)))
+
 (defun g/safe-eval (form)
   (condition-case err (eval form)
     (error (warn "%s" (error-message-string err) nil))))
@@ -39,6 +45,37 @@
       (if (and (not (file-exists-p dir))
   	       (yes-or-no-p (concat "Do you want to create directory: " dir)))
 	  (make-directory dir t)))))
+
+;;;; Company to Auto-Complete
+;; (defmacro ac-company-define-source (name backend &rest overrides)
+;;   "Define auto-complete source NAME from company BACKEND.
+;; When OVERRIDES is specified, OVERRIDES is prepend to original source."
+;;   `(defvar ,name
+;;      '(,@overrides
+;;        (candidates . (ac-company-candidates ',backend))
+;;        (prefix . (ac-company-prefix ',backend))
+;;        (document . (lambda (item) (ac-company-document ',backend item))))))
+  
+;; (defun ac-company-prefix (backend)
+;;   (require backend nil t)
+;;   (when (fboundp backend)
+;;     (let ((prefix (funcall backend 'prefix)))
+;;       (when (stringp prefix) 
+;; 	(- (point) (length prefix))))))
+
+;; (defun ac-company-candidates (backend)
+;;   (funcall backend 'candidates ac-prefix))
+
+;; (defun ac-company-meta-as-document (backend item)
+;;   (funcall backend 'meta item))
+
+;; (defun ac-company-doc-buffer-as-document (backend item)
+;;   (with-current-buffer (funcall backend 'doc-buffer item)
+;;     (buffer-string)))
+
+;; (defun ac-company-document (backend item)
+;;   (or (ac-company-doc-buffer-as-document backend item)
+;;       (ac-company-meta-as-document backend item)))
 
 ;;;; Packages
 (defvar g/packages '(
@@ -143,6 +180,29 @@ skewer-mode
 		(ac-config-default)
 		(add-hook 'lisp-interaction-mode-hook 'ac-emacs-lisp-mode-setup)))
 
+  ;; racket-mode
+  (g/require 'racket-mode
+  	     '(progn
+		(defun ac-source-racket-mode-candidates ()
+		  "Return a possibly-empty list of completions for the symbol at point."
+		  (racket--complete-prefix ac-prefix))
+
+		(defun ac-racket-mode-documentation (symbol)
+		  (let ((file (racket--eval/sexpr (format ",describe %s" symbol))))
+		    (read-from-file file)))
+		
+		(defvar ac-source-racket-mode
+		  '((candidates . ac-source-racket-mode-candidates)
+		    (symbol . "g")
+;;		    (document . ac-racket-mode-documentation)
+		    )
+		  "Source for racket completion")
+
+  		(add-hook 'racket-mode-hook
+  			  (lambda ()
+  			    (add-to-list 'ac-sources 'ac-source-racket-mode)
+			    (auto-complete-mode t)))))
+  
   ;; ;; geiser
   ;; (g/require 'geiser
   ;; 	     '(eval-after-load 'geiser-mode
@@ -158,16 +218,16 @@ skewer-mode
   ;; 		  '(add-to-list 'ac-modes 'geiser-repl-mode))))
 
   ;; org mode
-  (g/require 'org
-	     '(progn
-	       (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
-	       (add-to-list 'org-export-backends 'md)
-	       (add-to-list 'org-export-backends 'org)
-	       (setq org-descriptive-links nil)
-	       (setq org-export-publishing-directory "../export")
-	       (require 'ox-gfm)
-	       (setq org-md-src-style 'github-flavored)
-	       (require 'ox-mediawiki)))
+  ;; (g/require 'org
+  ;; 	     '(progn
+  ;; 	       (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
+  ;; 	       (add-to-list 'org-export-backends 'md)
+  ;; 	       (add-to-list 'org-export-backends 'org)
+  ;; 	       (setq org-descriptive-links nil)
+  ;; 	       (setq org-export-publishing-directory "../export")
+  ;; 	       (require 'ox-gfm)
+  ;; 	       (setq org-md-src-style 'github-flavored)
+  ;; 	       (require 'ox-mediawiki)))
 
   ;; mediawiki mode
   (g/require 'mediawiki
