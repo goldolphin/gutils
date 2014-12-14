@@ -198,10 +198,12 @@ skewer-mode
 		    )
 		  "Source for racket completion")
 
-  		(add-hook 'racket-mode-hook
-  			  (lambda ()
-  			    (add-to-list 'ac-sources 'ac-source-racket-mode)
-			    (auto-complete-mode t)))))
+		(defun ac-racket-mode-setup ()
+		  (add-to-list 'ac-sources 'ac-source-racket-mode)
+		  (auto-complete-mode t))
+
+  		(add-hook 'racket-mode-hook 'ac-racket-mode-setup)
+		(add-hook 'racket-repl-mode-hook 'ac-racket-mode-setup)))
   
   ;; ;; geiser
   ;; (g/require 'geiser
