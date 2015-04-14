@@ -81,8 +81,8 @@
 (defvar g/packages '(
 multiple-cursors
 auto-complete
-geiser
-ac-geiser
+;; geiser
+;; ac-geiser
 org
 mediawiki
 ;; helm
@@ -111,13 +111,13 @@ skewer-mode
 (display-time-mode t)
 (setq vc-follow-symlinks t)
 (setq indent-tabs-mode nil)
-(setq-default cursor-type 'bar)
 
-;; hl-line-mode
-(global-hl-line-mode)
 (if (display-graphic-p)
-    (set-face-background hl-line-face "#ffffd0")
-    (set-face-background hl-line-face "darkblue"))
+    (progn
+      (setq-default cursor-type 'bar)
+      ;; hl-line-mode
+      (global-hl-line-mode)
+      (set-face-background hl-line-face "#ffffd0")))
 
 ;; set encoding
 (prefer-coding-system 'utf-8)
@@ -204,6 +204,18 @@ skewer-mode
 
   		(add-hook 'racket-mode-hook 'ac-racket-mode-setup)
 		(add-hook 'racket-repl-mode-hook 'ac-racket-mode-setup)))
+
+  ;; ;; haskell-mode
+  ;; (g/require 'ghc
+  ;; 	     '(progn
+  ;; 		(autoload 'ghc-init "ghc" nil t)
+  ;; 		(autoload 'ghc-debug "ghc" nil t)
+  ;; 		(add-hook 'haskell-mode-hook (lambda () (ghc-init)))))
+
+  ;; ;; sematic
+  ;; (g/require 'semantic
+  ;; 	     '(progn
+  ;; 		(semantic-add-system-include "/usr/include/boost" 'c++-mode)))
   
   ;; ;; geiser
   ;; (g/require 'geiser
