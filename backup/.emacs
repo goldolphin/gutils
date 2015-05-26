@@ -78,19 +78,21 @@
 ;;       (ac-company-meta-as-document backend item)))
 
 ;;;; Packages
+
 (defvar g/packages '(
 multiple-cursors
-auto-complete
+;; auto-complete
 ;; geiser
 ;; ac-geiser
 org
-mediawiki
+company-racer
+;; mediawiki
 ;; helm
 session
 magit
 smex
-ac-js2
-skewer-mode
+;; ac-js2
+;; skewer-mode
 ))
 
 ;; (progn (package-refresh-contents) (g/install-batch g/packages))
@@ -510,13 +512,15 @@ skewer-mode
  '(global-font-lock-mode t nil (font-lock))
  '(inhibit-startup-screen t)
  '(lazy-highlight-initial-delay 0)
- '(package-archives (quote (("melpa" . "http://melpa.milkbox.net/packages/") ("marmalade" . "http://marmalade-repo.org/packages/") ("gnu" . "http://elpa.gnu.org/packages/"))))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(show-paren-style (quote parenthesis))
  '(size-indication-mode t)
  '(tool-bar-mode nil)
  '(truncate-partial-width-windows nil)
+ '(package-archives '(("melpa" . "http://melpa.org/packages/")
+;;                     ("marmalade" . "https://marmalade-repo.org/packages/")
+                     ("gnu" . "http://elpa.gnu.org/packages/")))
  '(x-select-enable-clipboard t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
