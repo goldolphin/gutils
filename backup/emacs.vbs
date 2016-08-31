@@ -1,1 +1,1 @@
-CreateObject("Wscript.Shell").Run "emacs-w32.exe", 0
+CreateObject("Wscript.Shell").Run "emacs.exe", 0

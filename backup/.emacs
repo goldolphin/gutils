@@ -81,16 +81,20 @@
 
 (defvar g/packages '(
 multiple-cursors
-;; auto-complete
+auto-complete
+racket-mode
 ;; geiser
 ;; ac-geiser
 org
+puml-mode
 company-racer
 ;; mediawiki
 ;; helm
+markdown-mode
 session
 magit
 smex
+flycheck
 ;; ac-js2
 ;; skewer-mode
 ))
@@ -126,7 +130,7 @@ smex
 
 ;; set browser
 (setq browse-url-browser-function
-  (if (string= system-type "cygwin")
+  (if (or (string= system-type "cygwin") (string= system-type "windows-nt"))
     (quote browse-url-default-windows-browser)
     (quote browse-url-default-macosx-browser)
   )
@@ -234,54 +238,58 @@ smex
   ;; 		  '(add-to-list 'ac-modes 'geiser-repl-mode))))
 
   ;; org mode
-  ;; (g/require 'org
-  ;; 	     '(progn
-  ;; 	       (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
-  ;; 	       (add-to-list 'org-export-backends 'md)
-  ;; 	       (add-to-list 'org-export-backends 'org)
-  ;; 	       (setq org-descriptive-links nil)
-  ;; 	       (setq org-export-publishing-directory "../export")
-  ;; 	       (require 'ox-gfm)
-  ;; 	       (setq org-md-src-style 'github-flavored)
-  ;; 	       (require 'ox-mediawiki)))
+  (g/require 'org-table)
+  (g/require 'org
+  	     '(progn
+  	       (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
+  	       (add-to-list 'org-export-backends 'md)
+  	       (add-to-list 'org-export-backends 'org)
+	       (add-to-list 'org-src-lang-modes '("plantuml" . puml))
+  	       (setq org-descriptive-links nil)
+  	       (setq org-export-publishing-directory "../export")
+  	       (require 'ox-gfm)
+  	       (setq org-md-src-style 'github-flavored)))
 
-  ;; mediawiki mode
-  (g/require 'mediawiki
-	     '(add-to-list 'auto-mode-alist '("\\.mw\\'" . mediawiki-mode)))
+  ;; ;; mediawiki mode
+  ;; (g/require 'mediawiki
+  ;; 	     '(add-to-list 'auto-mode-alist '("\\.mw\\'" . mediawiki-mode)))
 
   ;; markdown mode
-  (autoload 'markdown-mode "markdown-mode"
-    "Major mode for editing Markdown files" t)
-  (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
+  (g/require 'markdown-mode
+	     '(progn
+		(autoload 'markdown-mode "markdown-mode"
+		  "Major mode for editing Markdown files" t)
+		(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+		(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+		(add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
+		(add-hook 'markdown-mode-hook 'orgtbl-mode)))
 
-  ;; ;; helm
-  ;; (g/require 'helm-config
+  ;; puml-mode
+  ;; (g/require 'puml-mode
   ;; 	     '(progn
-  ;; 		(helm-mode t)))
-
+  ;; 		))
+  
   ;; smex
   (g/require 'smex
-	     '(progn
-		(global-set-key (kbd "M-x") 'smex)))
+  	     '(progn
+  		(global-set-key (kbd "M-x") 'smex)))
 
   ;; flycheck
   (g/require 'flycheck
 	     '(global-flycheck-mode))
 
-  ;; js2
-  (g/require 'ac-js2
-	     '(progn
-		(add-hook 'js2-mode-hook 'ac-js2-mode)
-		(setq ac-js2-evaluate-calls t)))
+  ;; ;; js2
+  ;; (g/require 'ac-js2
+  ;; 	     '(progn
+  ;; 		(add-hook 'js2-mode-hook 'ac-js2-mode)
+  ;; 		(setq ac-js2-evaluate-calls t)))
 
-  ;; skewer mode
-  (g/require 'skewer-mode
-	     '(progn
-		(add-hook 'js2-mode-hook 'skewer-mode)
-		(add-hook 'css-mode-hook 'skewer-css-mode)
-		(add-hook 'html-mode-hook 'skewer-html-mode)))
+  ;; ;; skewer mode
+  ;; (g/require 'skewer-mode
+  ;; 	     '(progn
+  ;; 		(add-hook 'js2-mode-hook 'skewer-mode)
+  ;; 		(add-hook 'css-mode-hook 'skewer-css-mode)
+  ;; 		(add-hook 'html-mode-hook 'skewer-html-mode)))
 
   ;; Load session
   (g/require 'session '(session-initialize))
@@ -512,15 +520,17 @@ smex
  '(global-font-lock-mode t nil (font-lock))
  '(inhibit-startup-screen t)
  '(lazy-highlight-initial-delay 0)
+ '(package-archives
+   (quote
+    (("melpa" . "http://melpa.org/packages/")
+     ("gnu" . "http://elpa.gnu.org/packages/"))))
+ '(puml-plantuml-jar-path "e:\\Tools\\plantuml.jar")
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(show-paren-style (quote parenthesis))
  '(size-indication-mode t)
  '(tool-bar-mode nil)
  '(truncate-partial-width-windows nil)
- '(package-archives '(("melpa" . "http://melpa.org/packages/")
-;;                     ("marmalade" . "https://marmalade-repo.org/packages/")
-                     ("gnu" . "http://elpa.gnu.org/packages/")))
  '(x-select-enable-clipboard t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
