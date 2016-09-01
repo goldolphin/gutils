@@ -86,7 +86,7 @@ racket-mode
 ;; geiser
 ;; ac-geiser
 org
-puml-mode
+;; puml-mode
 company-racer
 ;; mediawiki
 ;; helm
@@ -247,6 +247,9 @@ flycheck
 	       (add-to-list 'org-src-lang-modes '("plantuml" . puml))
   	       (setq org-descriptive-links nil)
   	       (setq org-export-publishing-directory "../export")
+	       (org-babel-do-load-languages 'org-babel-load-languages
+					    '((plantuml . t)))
+	       (setq org-plantuml-jar-path "e:/Tools/plantuml.jar")
   	       (require 'ox-gfm)
   	       (setq org-md-src-style 'github-flavored)))
 
@@ -313,130 +316,6 @@ flycheck
         )
 )
 
-;; set color theme
-;; (add-to-list 'load-path "~/.emacs-lisp/color-theme-6.6.0")
-;; (require 'color-theme)
-;; (color-theme-initialize)
-;; (color-theme-word-perfect)
-
-;; set vtl minor mode
-;; (require 'vtl)
-;; (autoload 'turn-on-vtl-mode "vtl" nil t)
-;; (add-hook 'html-mode-hook 'turn-on-vtl-mode t t)
-;; (add-hook 'xml-mode-hook 'turn-on-vtl-mode t t)
-;; (add-hook 'text-mode-hook 'turn-on-vtl-mode t t)
-;; (setq auto-mode-alist (cons '("\\.vm\\'" . html-mode) auto-mode-alist))
-
-;; set gud
-;; (setq gdb-many-windows t)
-;; (setq gdb-use-inferior-io-buffer t) 
-
-;;EmacsWiki
-;;(add-to-list 'load-path "~/.emacs-lisp/emacs-wiki")
-;; Load emacs-wiki
-;;(require 'emacs-wiki)
-;;Source tags
-;;(require 'emacs-wiki-srctag)
-
-;; ;;LaTeX
-
-;; ;;(load "auctex.el" nil t t)
-;; ;;(load "preview-latex.el" nil t t)
-;; ;;(require 'tex-site)
-;; (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-;; (setq LaTeX-math-mode t)
-;; ;;(load "preview-latex")
-
-;; (defun tex-indent-or-complete ()
-;;   (interactive)
-;;   (if (looking-at "\\>")
-;;       (TeX-complete-symbol)
-;;     (indent-for-tab-command))
-;;   )
-
-;; (defun my-tex-mode-hook ()
-;;   (define-key TeX-mode-map [(tab)] 'tex-indent-or-complete)
-;;   (outline-minor-mode)
-;; )
-
-
-;; Setup GBK environment
-;;(set-terminal-coding-system 'chinese-gbk)
-;;(set-keyboard-coding-system 'chinese-gbk)
-;;(set-language-environment 'chinese-gbk)
-;;(setq locale-coding-system 'chinese-gbk)
-;;(set-selection-coding-system 'chinese-gbk)
-;;(set-clipboard-coding-system 'chinese-gbk)
-
-;; Load tabbar
-;;(require 'tabbar)
-;;(tabbar-mode t)
-
-;; Load Global
-;; (require 'xgtags)
-;; (defun xgtags-generate-tags ()
-;;   "Generate gtags reference 1file for global."
-;;   (interactive)
-;;   (cd (read-from-minibuffer "Directory: " default-directory))
-;;   (shell-command "gtags --gtagslabel gtags")
-;;   (xgtags-make-complete-list)
-;; )
-
-;; (defun xgtags-init ()
-;;   (setq xgtags-mode 1)
-;;   (define-key c-mode-base-map [(f3)]  'xgtags-find-rtag)
-;;   (define-key c-mode-base-map [(f4)]  'xgtags-find-tag)
-;;   (define-key c-mode-base-map [(f5)] 'xgtags-find-symbol)
-;;   (define-key c-mode-base-map [(f6)]  'xgtags-find-file)
-;;   (define-key c-mode-base-map [(f7)]  'xgtags-find-pattern)
-;;   (define-key c-mode-base-map [(f9)] 'xgtags-parse-file)
-;;   (define-key c-mode-base-map [(f11)] 'xgtags-generate-tags)
-;; )
-
-;; Load CScope
-;; (require 'xcscope)
-;; (defun cscope-init ()
-;;   (cscope-minor-mode)
-;;   (define-key global-map [(f3)]  'cscope-find-this-symbol)
-;;   (define-key global-map [(f4)]  'cscope-find-global-definition)
-;;   ;; (define-key global-map [(f5)] 'cscope-prev-symbol)
-;;   ;; (define-key global-map [(f6)]  'cscope-next-symbol)
-;;   ;; (define-key global-map [(f7)]  'cscope-pop-mark)
-;;   ;; (define-key global-map [(f9)] 'cscope-display-buffer)
-;; )
-
-;; ;; Load CEDET
-;; ;(setq semantic-load-turn-useful-things-on t)
-;; (load-file "/usr/share/emacs/site-lisp/cedet-common/cedet.el")
-;; ;; Enabling various SEMANTIC minor modes.  See semantic/INSTALL for more ideas.
-;; ;; Select one of the following
-;; ;(semantic-load-enable-code-helpers)
-;; ;(setq semanticdb-project-roots (list (expand-file-name "/")))
-;; (autoload 'senator-try-expand-semantic "senator")
-
-;; ;; Xrefactory configuration part ;;
-;; (defvar xref-key-binding 'none)
-;; (defvar xref-current-project nil) ;; can be also "my_project_name"
-;; (defvar xref-key-binding 'global) ;; can be also 'local or 'none
-;; (setq load-path (cons "/home/caofx/xref/emacs" load-path))
-;; (setq exec-path (cons "/home/caofx/xref" exec-path))
-;; (load "xrefactory")
-;; ;; end of Xrefactory configuration part ;;
-
-;; Xrefactory key bindings
-;; (define-key global-map [(f11)] 'xref-refactor)
-;; (define-key global-map [(f8)] 'xref-completion)
-;; (define-key global-map [27 (f8)] 'xref-ide-compile-run)
-;; (define-key global-map [(f7)] 'xref-delete-window)
-;; (define-key global-map [(f6)] 'xref-push-and-goto-definition)
-;; (define-key global-map [27 (f6)] 'xref-browse-symbol)
-;; (define-key global-map [(f5)] 'xref-pop-and-return)
-;; (define-key global-map [27 (f5)] 'xref-re-push)
-;; (define-key global-map [(f4)] 'xref-next-reference)
-;; (define-key global-map [27 (f4)] 'xref-alternative-next-reference)
-;; (define-key global-map [(f3)] 'xref-previous-reference)
-;; (define-key global-map [27 (f3)] 'xref-alternative-previous-reference)
-
 (defun insert-current-time ()
   (interactive)
   (insert (format-time-string "%Y-%m-%d %H:%M:%S" (current-time)))
@@ -470,42 +349,6 @@ flycheck
   (define-key c-mode-base-map [(9)] 'c-indent-or-complete)
 )
 
-;; ;; (semantic-load-enable-guady-code-helpers)
-;; ;; (semantic-load-enable-excessive-code-helpers)
-;; ;; Enable this if you develop in semantic, or develop grammars
-;; ;; (semantic-load-enable-semantic-debugging-helpers)
-
-;; ;; Edit the path in the following line to reflect the
-;; ;; actual location of the MATLAB root directory on your system.
-;; (add-to-list 'load-path "/usr/local/matlab7/java/extern/EmacsLink/lisp")
-;; (autoload 'matlab-eei-connect "matlab-eei" 
-;;   "Connects Emacs to MATLAB's external editor interface.")
-;; (autoload 'matlab-mode "matlab" "Enter Matlab mode." t)
-;; (setq auto-mode-alist (cons '("\\.m\\'" . matlab-mode) auto-mode-alist))
-;; (autoload 'matlab-shell "matlab" "Interactive Matlab mode." t)
-;; (setq matlab-indent-function t); if you want function bodies indented
-;; (setq matlab-verify-on-save-flag nil); turn off auto-verify on save
-
-;; (defun matlab-indent-or-complete ()
-;; (interactive)
-;; (if (looking-at "\\>")
-;;   (matlab-complete-symbol)
-;;   (indent-for-tab-command))
-;;     )
-    
-;; (defun my-matlab-mode-hook ()
-;;   (setq fill-column 76)
-;;   (define-key matlab-mode-map [(tab)] 'matlab-indent-or-complete)
-;;   (imenu-add-to-menubar "Find")); where auto-fill should wrap
-  
-;; (add-hook 'matlab-mode-hook 'my-matlab-mode-hook)
-
-
-;; ;; Uncomment the next two lines to enable use of the mlint package provided
-;; ;; with EmacsLink.     
-;; (setq matlab-show-mlint-warnings t)
-;; (setq matlab-highlight-cross-function-variables t)
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -520,11 +363,12 @@ flycheck
  '(global-font-lock-mode t nil (font-lock))
  '(inhibit-startup-screen t)
  '(lazy-highlight-initial-delay 0)
+ '(org-confirm-babel-evaluate nil)
  '(package-archives
    (quote
     (("melpa" . "http://melpa.org/packages/")
      ("gnu" . "http://elpa.gnu.org/packages/"))))
- '(puml-plantuml-jar-path "e:\\Tools\\plantuml.jar")
+ '(puml-plantuml-jar-path "e:/Tools/plantuml.jar")
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(show-paren-style (quote parenthesis))
