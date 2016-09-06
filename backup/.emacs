@@ -103,6 +103,7 @@ flycheck
 
 ;;;; Configurations
 (setq visible-bell nil)
+(setq ring-bell-function 'ignore)
 (fset 'yes-or-no-p 'y-or-n-p)
 (auto-image-file-mode)
 (setq user-full-name "goldolphin")
@@ -364,6 +365,7 @@ flycheck
  '(inhibit-startup-screen t)
  '(lazy-highlight-initial-delay 0)
  '(org-confirm-babel-evaluate nil)
+ '(org-support-shift-select t)
  '(package-archives
    (quote
     (("melpa" . "http://melpa.org/packages/")
