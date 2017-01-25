@@ -6,6 +6,13 @@
 ;;; Code:
 
 ;;;; Utilities
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (defun read-from-file (filePath)
   "Return filePath's content."
   (with-temp-buffer
@@ -119,6 +126,13 @@ flycheck
 (setq vc-follow-symlinks t)
 (setq indent-tabs-mode nil)
 
+;; set font
+;(set-frame-font "-unknown-PragmataPro-normal-normal-normal-*-*-*-*-*-*-0-iso10646-1")
+(dolist (charset '(kana han symbol cjk-misc bopomofo))
+  (set-fontset-font (frame-parameter nil 'font)
+                    charset (font-spec :family "Microsoft Yahei" :size 16)))
+
+;; set cursor
 (if (display-graphic-p)
     (progn
       (setq-default cursor-type 'bar)
@@ -242,17 +256,18 @@ flycheck
   (g/require 'org-table)
   (g/require 'org
   	     '(progn
-  	       (add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
-  	       (add-to-list 'org-export-backends 'md)
-  	       (add-to-list 'org-export-backends 'org)
-	       (add-to-list 'org-src-lang-modes '("plantuml" . puml))
-  	       (setq org-descriptive-links nil)
-  	       (setq org-export-publishing-directory "../export")
-	       (org-babel-do-load-languages 'org-babel-load-languages
-					    '((plantuml . t)))
-	       (setq org-plantuml-jar-path "e:/Tools/plantuml.jar")
-  	       (require 'ox-gfm)
-  	       (setq org-md-src-style 'github-flavored)))
+		(setq org-export-allow-bind-keywords t)
+		(add-to-list 'load-path "/usr/share/emacs/site-lisp/org/")
+		(add-to-list 'org-export-backends 'md)
+		(add-to-list 'org-export-backends 'org)
+		(add-to-list 'org-src-lang-modes '("plantuml" . puml))
+		(setq org-descriptive-links nil)
+		(setq org-export-publishing-directory "../")
+		(org-babel-do-load-languages 'org-babel-load-languages
+					     '((plantuml . t)))
+		(setq org-plantuml-jar-path "e:/Tools/plantuml.jar")
+		(require 'ox-gfm)
+		(setq org-md-src-style 'github-flavored)))
 
   ;; ;; mediawiki mode
   ;; (g/require 'mediawiki
@@ -370,14 +385,18 @@ flycheck
    (quote
     (("melpa" . "http://melpa.org/packages/")
      ("gnu" . "http://elpa.gnu.org/packages/"))))
+ '(package-selected-packages
+   (quote
+    (plantuml-mode smex session racket-mode multiple-cursors markdown-mode magit flycheck company-racer auto-complete)))
  '(puml-plantuml-jar-path "e:/Tools/plantuml.jar")
  '(save-place t nil (saveplace))
+ '(select-enable-clipboard t)
+ '(session-use-package t nil (session))
  '(show-paren-mode t)
  '(show-paren-style (quote parenthesis))
  '(size-indication-mode t)
  '(tool-bar-mode nil)
- '(truncate-partial-width-windows nil)
- '(x-select-enable-clipboard t))
+ '(truncate-partial-width-windows nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

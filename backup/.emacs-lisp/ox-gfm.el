@@ -620,7 +620,7 @@ contents of hidden elements.
 
 Return output file's name."
   (interactive)
-  (let ((outfile (org-export-output-file-name ".md" subtreep)))
+  (let ((outfile (org-export-output-file-name ".md" subtreep (symbol-value 'org-export-publishing-directory))))
     (org-export-to-file 'md outfile async subtreep visible-only)))
 
 
