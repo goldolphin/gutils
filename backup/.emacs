@@ -128,9 +128,10 @@ flycheck
 
 ;; set font
 ;(set-frame-font "-unknown-PragmataPro-normal-normal-normal-*-*-*-*-*-*-0-iso10646-1")
-(dolist (charset '(kana han symbol cjk-misc bopomofo))
-  (set-fontset-font (frame-parameter nil 'font)
-                    charset (font-spec :family "Microsoft Yahei" :size 16)))
+(if (display-graphic-p)
+    (dolist (charset '(kana han symbol cjk-misc bopomofo))
+      (set-fontset-font (frame-parameter nil 'font)
+			charset (font-spec :family "Microsoft Yahei" :size 16))))
 
 ;; set cursor
 (if (display-graphic-p)
@@ -266,9 +267,11 @@ flycheck
 		(org-babel-do-load-languages 'org-babel-load-languages
 					     '((plantuml . t)))
 		(setq org-plantuml-jar-path "e:/Tools/plantuml.jar")
-		(require 'ox-gfm)
-		(setq org-md-src-style 'github-flavored)))
-
+		(add-hook 'org-mode-hook (lambda ()
+					   (setq truncate-lines nil)))
+;;		(require 'ox-gfm)
+  ;;		(setq org-md-src-style 'github-flavored)
+		))
   ;; ;; mediawiki mode
   ;; (g/require 'mediawiki
   ;; 	     '(add-to-list 'auto-mode-alist '("\\.mw\\'" . mediawiki-mode)))
@@ -377,9 +380,11 @@ flycheck
  '(geiser-mode-smart-tab-p t)
  '(geiser-mode-start-repl-p t)
  '(global-font-lock-mode t nil (font-lock))
+ '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(lazy-highlight-initial-delay 0)
  '(org-confirm-babel-evaluate nil)
+ '(org-image-actual-width nil)
  '(org-support-shift-select t)
  '(package-archives
    (quote
@@ -387,7 +392,7 @@ flycheck
      ("gnu" . "http://elpa.gnu.org/packages/"))))
  '(package-selected-packages
    (quote
-    (plantuml-mode smex session racket-mode multiple-cursors markdown-mode magit flycheck company-racer auto-complete)))
+    (org plantuml-mode smex session racket-mode multiple-cursors markdown-mode magit flycheck company-racer auto-complete)))
  '(puml-plantuml-jar-path "e:/Tools/plantuml.jar")
  '(save-place t nil (saveplace))
  '(select-enable-clipboard t)
