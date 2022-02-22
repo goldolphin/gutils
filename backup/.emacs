@@ -183,7 +183,7 @@ flycheck
 (add-hook 'after-init-hook 'my-after-init-hook)
 (defun my-after-init-hook ()
   ;; linum
-  (global-linum-mode)
+  (global-display-line-numbers-mode)
 
   ;; multiple cursors
   (g/require 'multiple-cursors
@@ -407,4 +407,4 @@ flycheck
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(linum ((t (:inherit (shadow default) :foreground "dark cyan")))))
+)
